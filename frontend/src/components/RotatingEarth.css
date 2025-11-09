@@ -1,0 +1,434 @@
+.earth-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: radial-gradient(ellipse at center, #0a0a1a 0%, #000000 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.earth-scene {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+.earth {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    overflow: hidden;
+    background:
+        /* Realistic Earth ocean colors */
+        radial-gradient(circle at 20% 30%, #0066cc 0%, #004499 30%, #003366 60%, #001122 100%);
+    box-shadow:
+        /* Enhanced 3D shadows */
+        inset -50px -50px 120px rgba(0, 0, 0, 0.8),
+        inset 30px 30px 80px rgba(255, 255, 255, 0.15),
+        /* Atmospheric glow */
+        0 0 120px rgba(100, 150, 255, 0.6),
+        0 0 250px rgba(100, 150, 255, 0.3);
+    transform-style: preserve-3d;
+}
+
+.earth-surface {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    animation: continentRotate 120s linear infinite;
+    z-index: 1;
+}
+
+.continent {
+    position: absolute;
+    opacity: 1;
+    z-index: 4;
+}
+
+/* North America - Realistic shape and colors */
+.continent-1 {
+    width: 120px;
+    height: 100px;
+    top: 15%;
+    left: 15%;
+    background:
+        radial-gradient(ellipse at 40% 30%, #8B4513 0%, #CD853F 20%, #228B22 40%, #32CD32 60%, #006400 80%, #004000 100%);
+    clip-path: polygon(20% 0%, 80% 10%, 90% 40%, 85% 70%, 60% 85%, 40% 80%, 15% 60%, 10% 30%);
+    box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Europe/Africa */
+.continent-2 {
+    width: 90px;
+    height: 140px;
+    top: 20%;
+    left: 45%;
+    background:
+        radial-gradient(ellipse at 50% 40%, #D2691E 0%, #CD853F 20%, #228B22 40%, #32CD32 60%, #006400 80%, #8B4513 100%);
+    clip-path: polygon(30% 0%, 70% 5%, 85% 25%, 90% 60%, 80% 85%, 60% 95%, 40% 90%, 20% 70%, 15% 40%, 25% 15%);
+    box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Asia */
+.continent-3 {
+    width: 130px;
+    height: 90px;
+    top: 10%;
+    right: 10%;
+    background:
+        radial-gradient(ellipse at 30% 50%, #8B4513 0%, #D2691E 15%, #228B22 35%, #32CD32 55%, #006400 75%, #004000 100%);
+    clip-path: polygon(10% 20%, 40% 0%, 70% 5%, 90% 25%, 95% 60%, 85% 80%, 60% 85%, 30% 80%, 15% 60%, 5% 40%);
+    box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* South America */
+.continent-4 {
+    width: 65px;
+    height: 120px;
+    top: 40%;
+    left: 25%;
+    background:
+        radial-gradient(ellipse at 50% 30%, #228B22 0%, #32CD32 30%, #006400 50%, #8B4513 70%, #A0522D 90%, #654321 100%);
+    clip-path: polygon(40% 0%, 60% 5%, 80% 20%, 85% 50%, 75% 80%, 50% 95%, 30% 90%, 20% 70%, 25% 40%, 35% 15%);
+    box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Australia */
+.continent-5 {
+    width: 70px;
+    height: 50px;
+    bottom: 20%;
+    right: 15%;
+    background:
+        radial-gradient(ellipse at 50% 50%, #D2691E 0%, #CD853F 25%, #228B22 50%, #32CD32 75%, #006400 100%);
+    clip-path: polygon(15% 30%, 40% 10%, 70% 15%, 90% 40%, 85% 70%, 60% 85%, 30% 80%, 10% 60%);
+    box-shadow: inset -3px -3px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Antarctica */
+.continent-6 {
+    width: 160px;
+    height: 40px;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    background:
+        radial-gradient(ellipse at 50% 50%, #F0F8FF 0%, #E6E6FA 30%, #D3D3D3 60%, #B0C4DE 80%, #A9A9A9 100%);
+    clip-path: polygon(10% 40%, 30% 20%, 50% 10%, 70% 20%, 90% 40%, 85% 80%, 15% 80%);
+    box-shadow: inset -3px -3px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Ocean depth effects */
+.ocean-effects {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background:
+        radial-gradient(ellipse 200px 100px at 30% 40%, rgba(0, 50, 150, 0.4) 0%, transparent 60%),
+        radial-gradient(ellipse 150px 80px at 70% 60%, rgba(0, 80, 180, 0.3) 0%, transparent 50%),
+        radial-gradient(ellipse 120px 60px at 20% 70%, rgba(0, 60, 160, 0.3) 0%, transparent 55%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Ice caps */
+.ice-cap {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(255, 255, 255, 0.95) 0%, rgba(200, 230, 255, 0.7) 50%, transparent 70%);
+    pointer-events: none;
+    z-index: 5;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.north-pole {
+    width: 100px;
+    height: 50px;
+    top: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.south-pole {
+    width: 120px;
+    height: 35px;
+    bottom: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Day/night terminator */
+.day-night-terminator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            transparent 40%,
+            rgba(0, 0, 0, 0.1) 50%,
+            rgba(0, 0, 0, 0.3) 60%,
+            rgba(0, 0, 0, 0.6) 70%,
+            rgba(0, 0, 0, 0.8) 80%,
+            rgba(0, 0, 0, 0.9) 90%,
+            rgba(0, 0, 0, 0.95) 100%);
+    animation: dayNightCycle 100s linear infinite;
+    pointer-events: none;
+    z-index: 6;
+}
+
+/* Cloud layer */
+.cloud-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background:
+        radial-gradient(ellipse 80px 40px at 25% 20%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.5) 50%, transparent 70%),
+        radial-gradient(ellipse 60px 30px at 60% 15%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 50%, transparent 70%),
+        radial-gradient(ellipse 100px 50px at 15% 45%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.45) 50%, transparent 70%),
+        radial-gradient(ellipse 70px 35px at 70% 40%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 50%, transparent 70%),
+        radial-gradient(ellipse 90px 45px at 40% 65%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.5) 50%, transparent 70%),
+        radial-gradient(ellipse 65px 32px at 80% 70%, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.35) 50%, transparent 70%),
+        radial-gradient(ellipse 55px 28px at 20% 80%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 50%, transparent 70%);
+    animation: cloudDrift 60s linear infinite;
+    pointer-events: none;
+    z-index: 7;
+}
+
+/* Atmosphere */
+.atmosphere {
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle, transparent 60%, rgba(135, 206, 250, 0.6) 70%, rgba(30, 144, 255, 0.8) 80%, rgba(0, 100, 255, 0.6) 90%, transparent 100%);
+    pointer-events: none;
+    animation: atmosphereGlow 4s ease-in-out infinite alternate;
+    z-index: 10;
+}
+
+/* 3D lighting effects */
+.earth-lighting {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.4) 0%,
+            transparent 30%,
+            transparent 70%,
+            rgba(0, 0, 0, 0.5) 100%);
+    pointer-events: none;
+    z-index: 9;
+}
+
+/* Tracking points */
+.tracking-point {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #FFD700;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #FFD700, 0 0 30px rgba(255, 215, 0, 0.7);
+    z-index: 11;
+}
+
+.point-1 {
+    top: 35%;
+    left: 40%;
+}
+
+.point-2 {
+    top: 55%;
+    right: 30%;
+}
+
+.point-3 {
+    bottom: 30%;
+    left: 25%;
+}
+
+/* Orbital rings */
+.orbital-ring {
+    position: absolute;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    animation: orbitRotate 30s linear infinite;
+}
+
+.ring-1 {
+    width: 600px;
+    height: 600px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotateX(75deg);
+}
+
+.ring-2 {
+    width: 700px;
+    height: 700px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotateX(60deg);
+    animation-duration: 45s;
+    animation-direction: reverse;
+}
+
+/* Stars */
+.stars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: starTwinkle 3s ease-in-out infinite;
+}
+
+
+
+/* Animations */
+@keyframes continentRotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes dayNightCycle {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes cloudDrift {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes atmosphereGlow {
+    0% {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+}
+
+@keyframes orbitRotate {
+    from {
+        transform: translate(-50%, -50%) rotateX(75deg) rotateZ(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotateX(75deg) rotateZ(360deg);
+    }
+}
+
+@keyframes starTwinkle {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .earth-container {
+        height: 400px;
+    }
+
+    .earth {
+        width: 400px;
+        height: 400px;
+    }
+
+    .ring-1 {
+        width: 480px;
+        height: 480px;
+    }
+
+    .ring-2 {
+        width: 550px;
+        height: 550px;
+    }
+
+
+}
+
+@media (max-width: 480px) {
+    .earth-container {
+        height: 300px;
+    }
+
+    .earth {
+        width: 320px;
+        height: 320px;
+    }
+
+    .ring-1 {
+        width: 380px;
+        height: 380px;
+    }
+
+    .ring-2 {
+        width: 420px;
+        height: 420px;
+    }
+
+
+}

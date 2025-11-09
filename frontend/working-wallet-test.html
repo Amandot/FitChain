@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>✅ Working Wallet Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0a1929, #1e3a8a);
+        color: white;
+        margin: 0;
+        padding: 2rem;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .container {
+        max-width: 600px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        text-align: center;
+      }
+      h1 {
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2rem;
+      }
+      .btn {
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        border: none;
+        color: #0a1929;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 0.5rem;
+        transition: all 0.2s ease;
+        min-width: 200px;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn.success {
+        background: linear-gradient(135deg, #10b981, #059669);
+      }
+      .btn.error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+      }
+      .status {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        border-left: 4px solid #d4af37;
+        text-align: left;
+      }
+      .success {
+        border-left-color: #10b981;
+        color: #10b981;
+      }
+      .error {
+        border-left-color: #ef4444;
+        color: #ef4444;
+      }
+      .warning {
+        border-left-color: #f59e0b;
+        color: #f59e0b;
+      }
+      .info {
+        border-left-color: #3b82f6;
+        color: #3b82f6;
+      }
+      .wallet-info {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        text-align: left;
+      }
+      .progress {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+      .step {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .step.active {
+        background: #d4af37;
+        color: #0a1929;
+        border-color: #d4af37;
+      }
+      .step.completed {
+        background: #10b981;
+        color: white;
+        border-color: #10b981;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>✅ Working Wallet Connection Test</h1>
+
+      <div class="progress">
+        <div class="step" id="step1">1</div>
+        <div class="step" id="step2">2</div>
+        <div class="step" id="step3">3</div>
+      </div>
+
+      <button class="btn" onclick="runTest()" id="testBtn">
+        🚀 Test Wallet Connection
+      </button>
+
+      <div id="status" class="status info">
+        Click "Test Wallet Connection" to start
+      </div>
+
+      <div id="walletInfo" class="wallet-info" style="display: none">
+        <h3>🎉 Wallet Connected Successfully!</h3>
+        <div id="walletDetails"></div>
+      </div>
+
+      <div style="margin-top: 2rem">
+        <button
+          class="btn"
+          onclick="window.open('http://localhost:5174', '_blank')"
+          style="background: rgba(59, 130, 246, 0.8)"
+        >
+          🎯 Go to Main App
+        </button>
+      </div>
+
+      <div
+        style="
+          margin-top: 2rem;
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.7);
+        "
+      >
+        <p><strong>Need help?</strong></p>
+        <p>
+          1. Install
+          <a
+            href="https://chrome.google.com/webstore/detail/freighter/bcacfldlkkdogcmkkibnjlakofdplcbk"
+            target="_blank"
+            style="color: #d4af37"
+            >Freighter Extension</a
+          >
+        </p>
+        <p>2. Create a Stellar account in Freighter</p>
+        <p>3. Make sure Freighter is unlocked</p>
+      </div>
+    </div>
+
+    <script>
+      let currentStep = 1;
+
+      function updateStep(step, status = "active") {
+        // Reset all steps
+        for (let i = 1; i <= 3; i++) {
+          const stepEl = document.getElementById(`step${i}`);
+          stepEl.className = "step";
+        }
+
+        // Update completed steps
+        for (let i = 1; i < step; i++) {
+          document.getElementById(`step${i}`).className = "step completed";
+        }
+
+        // Update current step
+        if (step <= 3) {
+          document.getElementById(`step${step}`).className = `step ${status}`;
+        }
+
+        currentStep = step;
+      }
+
+      async function runTest() {
+        const testBtn = document.getElementById("testBtn");
+        const statusDiv = document.getElementById("status");
+        const walletInfoDiv = document.getElementById("walletInfo");
+
+        testBtn.disabled = true;
+        testBtn.textContent = "🔄 Testing...";
+        walletInfoDiv.style.display = "none";
+
+        try {
+          // Step 1: Check Freighter
+          updateStep(1, "active");
+          statusDiv.innerHTML =
+            "Step 1: Checking for Freighter wallet extension...";
+          statusDiv.className = "status info";
+
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          if (!window.freighter) {
+            throw new Error(
+              "Freighter wallet extension not found. Please install it first."
+            );
+          }
+
+          statusDiv.innerHTML =
+            "Step 1: ✅ Freighter detected!\nStep 2: Requesting connection...";
+          updateStep(2, "active");
+
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          // Step 2: Connect
+          await window.freighter.requestAccess();
+
+          statusDiv.innerHTML =
+            "Step 1: ✅ Freighter detected!\nStep 2: ✅ Connection requested!\nStep 3: Verifying connection...";
+          updateStep(3, "active");
+
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+
+          // Step 3: Verify
+          const isAllowed = await window.freighter.isAllowed();
+          if (!isAllowed) {
+            throw new Error(
+              "Connection was rejected. Please approve the request in Freighter."
+            );
+          }
+
+          const publicKey = await window.freighter.getPublicKey();
+          if (!publicKey) {
+            throw new Error(
+              "No account found. Please create an account in Freighter."
+            );
+          }
+
+          let network = "Unknown";
+          try {
+            network = await window.freighter.getNetwork();
+          } catch (e) {
+            network = "testnet";
+          }
+
+          // Success!
+          updateStep(4, "completed");
+          statusDiv.innerHTML =
+            "Step 1: ✅ Freighter detected!\nStep 2: ✅ Connection established!\nStep 3: ✅ Wallet verified!\n\n🎉 All tests passed successfully!";
+          statusDiv.className = "status success";
+
+          testBtn.textContent = "✅ Connection Working";
+          testBtn.className = "btn success";
+
+          // Show wallet info
+          document.getElementById("walletDetails").innerHTML = `
+                    <p><strong>Public Key:</strong> ${publicKey}</p>
+                    <p><strong>Short Address:</strong> ${publicKey.slice(
+                      0,
+                      6
+                    )}...${publicKey.slice(-4)}</p>
+                    <p><strong>Network:</strong> ${network}</p>
+                    <p><strong>Status:</strong> ✅ Connected and Ready</p>
+                    <p><strong>Test Time:</strong> ${new Date().toLocaleString()}</p>
+                `;
+          walletInfoDiv.style.display = "block";
+        } catch (error) {
+          console.error("Test failed:", error);
+
+          statusDiv.innerHTML = `❌ Test Failed: ${error.message}\n\nPlease check the troubleshooting steps below.`;
+          statusDiv.className = "status error";
+
+          testBtn.disabled = false;
+          testBtn.textContent = "🔄 Try Again";
+          testBtn.className = "btn error";
+
+          updateStep(currentStep, "error");
+        }
+      }
+
+      // Auto-check on page load
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          if (window.freighter) {
+            document.getElementById("status").innerHTML =
+              "✅ Freighter detected! Ready to test connection.";
+            document.getElementById("status").className = "status success";
+          } else {
+            document.getElementById("status").innerHTML =
+              "❌ Freighter not found. Please install the extension first.";
+            document.getElementById("status").className = "status error";
+          }
+        }, 500);
+      });
+    </script>
+  </body>
+</html>

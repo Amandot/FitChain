@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🗄️ Database Explorer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0a1929, #1e3a8a);
+        color: white;
+        margin: 0;
+        padding: 2rem;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        text-align: center;
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2rem;
+      }
+      .database-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+      }
+      .database-card {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 16px;
+        padding: 2rem;
+        backdrop-filter: blur(10px);
+      }
+      .database-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .database-icon {
+        font-size: 2rem;
+      }
+      .database-title {
+        color: #d4af37;
+        font-size: 1.25rem;
+        margin: 0;
+      }
+      .database-path {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-family: "Courier New", monospace;
+        font-size: 0.85rem;
+        margin: 1rem 0;
+        border-left: 4px solid #d4af37;
+        overflow-x: auto;
+      }
+      .table-list {
+        display: grid;
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+      .table-item {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .table-name {
+        font-weight: 600;
+        color: white;
+      }
+      .table-description {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .btn {
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        border: none;
+        color: #0a1929;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 0.25rem;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+      }
+      .btn.secondary {
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: #3b82f6;
+      }
+      .btn.small {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+      }
+      .access-methods {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+      }
+      .method-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .method-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+      }
+      .method-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      .method-title {
+        color: #d4af37;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .method-description {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 1rem;
+      }
+      .status-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
+      .status-online {
+        background: #10b981;
+      }
+      .status-offline {
+        background: #ef4444;
+      }
+      .status-unknown {
+        background: #6b7280;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🗄️ Database Explorer</h1>
+
+      <div class="database-grid">
+        <!-- Main SQLite Database -->
+        <div class="database-card">
+          <div class="database-header">
+            <div class="database-icon">🗄️</div>
+            <div>
+              <h3 class="database-title">Main SQLite Database</h3>
+              <div id="db-status">
+                <span class="status-indicator status-unknown"></span>
+                Checking status...
+              </div>
+            </div>
+          </div>
+
+          <div class="database-path">
+            📁 backend/database/stellar_strider.db
+          </div>
+
+          <div class="table-list">
+            <div class="table-item">
+              <div>
+                <div class="table-name">👥 users</div>
+                <div class="table-description">User accounts and profiles</div>
+              </div>
+            </div>
+            <div class="table-item">
+              <div>
+                <div class="table-name">🏆 contests</div>
+                <div class="table-description">
+                  Fitness contests and challenges
+                </div>
+              </div>
+            </div>
+            <div class="table-item">
+              <div>
+                <div class="table-name">🎯 contest_participants</div>
+                <div class="table-description">
+                  Contest participation records
+                </div>
+              </div>
+            </div>
+            <div class="table-item">
+              <div>
+                <div class="table-name">💰 prize_distributions</div>
+                <div class="table-description">Contest prize payouts</div>
+              </div>
+            </div>
+            <div class="table-item">
+              <div>
+                <div class="table-name">💳 payment_history</div>
+                <div class="table-description">
+                  Stellar payment transactions
+                </div>
+              </div>
+            </div>
+            <div class="table-item">
+              <div>
+                <div class="table-name">🏅 nft_rewards</div>
+                <div class="table-description">NFT achievement rewards</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
+            <a href="database-viewer.html" class="btn small">🌐 Web Viewer</a>
+            <button onclick="testDatabase()" class="btn small secondary">
+              🔄 Test Connection
+            </button>
+          </div>
+        </div>
+
+        <!-- Configuration Files -->
+        <div class="database-card">
+          <div class="database-header">
+            <div class="database-icon">⚙️</div>
+            <div>
+              <h3 class="database-title">Database Configuration</h3>
+              <div>
+                <span class="status-indicator status-online"></span>
+                Configuration files
+              </div>
+            </div>
+          </div>
+
+          <div class="database-path">
+            📁 backend/config/database.js<br />
+            📁 backend/database/schema.sql
+          </div>
+
+          <div class="table-list">
+            <div class="table-item">
+              <div>
+                <div class="table-name">🔧 database.js</div>
+                <div class="table-description">
+                  SQLite connection and operations
+                </div>
+              </div>
+            </div>
+            <div class="table-item">
+              <div>
+                <div class="table-name">📋 schema.sql</div>
+                <div class="table-description">Database table definitions</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- API Endpoints -->
+        <div class="database-card">
+          <div class="database-header">
+            <div class="database-icon">🌐</div>
+            <div>
+              <h3 class="database-title">API Database Access</h3>
+              <div id="api-status">
+                <span class="status-indicator status-unknown"></span>
+                Checking API...
+              </div>
+            </div>
+          </div>
+
+          <div class="database-path">🔗 http://localhost:3001/api</div>
+
+          <div class="table-list">
+            <div class="table-item">
+              <div>
+                <div class="table-name">GET /leaderboard/global</div>
+                <div class="table-description">Global user rankings</div>
+              </div>
+            </div>
+            <div class="table-item">
+              <div>
+                <div class="table-name">GET /contests</div>
+                <div class="table-description">All contests data</div>
+              </div>
+            </div>
+            <div class="table-item">
+              <div>
+                <div class="table-name">GET /payments/recent/all</div>
+                <div class="table-description">Payment history</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
+            <button onclick="testAPI()" class="btn small">🔄 Test API</button>
+            <button onclick="startBackend()" class="btn small secondary">
+              🚀 Start Backend
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Access Methods -->
+      <div class="access-methods">
+        <h3 style="color: #d4af37; margin-bottom: 1rem">
+          🚀 Database Access Methods
+        </h3>
+
+        <div class="method-grid">
+          <div class="method-card">
+            <div class="method-icon">🌐</div>
+            <div class="method-title">Web Viewer</div>
+            <div class="method-description">
+              Browse database tables in your browser with real-time updates
+            </div>
+            <a href="database-viewer.html" class="btn small">Open Viewer</a>
+          </div>
+
+          <div class="method-card">
+            <div class="method-icon">🔗</div>
+            <div class="method-title">REST API</div>
+            <div class="method-description">
+              Access data through HTTP endpoints for frontend integration
+            </div>
+            <button onclick="testAPI()" class="btn small secondary">
+              Test API
+            </button>
+          </div>
+
+          <div class="method-card">
+            <div class="method-icon">🖥️</div>
+            <div class="method-title">Node.js Script</div>
+            <div class="method-description">
+              Command-line database viewer with formatted output
+            </div>
+            <button onclick="runNodeScript()" class="btn small secondary">
+              Run Script
+            </button>
+          </div>
+
+          <div class="method-card">
+            <div class="method-icon">🛠️</div>
+            <div class="method-title">SQLite CLI</div>
+            <div class="method-description">
+              Direct database access using SQLite command line
+            </div>
+            <button onclick="showSQLiteCommands()" class="btn small secondary">
+              Show Commands
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Database Summary -->
+      <div class="access-methods">
+        <h3 style="color: #d4af37; margin-bottom: 1rem">📊 Database Summary</h3>
+        <div id="database-summary">Loading database summary...</div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="access-methods" style="text-align: center">
+        <h3 style="color: #d4af37; margin-bottom: 1rem">⚡ Quick Actions</h3>
+        <div
+          style="
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
+          <a href="database-viewer.html" class="btn">🗄️ View Database</a>
+          <a href="http://localhost:5174" class="btn secondary">🎯 Main App</a>
+          <button onclick="downloadDatabase()" class="btn secondary">
+            📥 Download DB
+          </button>
+          <button onclick="refreshData()" class="btn secondary">
+            🔄 Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Check database and API status on load
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          checkDatabaseStatus();
+          checkAPIStatus();
+          loadDatabaseSummary();
+        }, 1000);
+      });
+
+      async function checkDatabaseStatus() {
+        const statusDiv = document.getElementById("db-status");
+
+        try {
+          // Try to access database through API
+          const response = await fetch(
+            "http://localhost:3001/api/leaderboard/global"
+          );
+          if (response.ok) {
+            statusDiv.innerHTML =
+              '<span class="status-indicator status-online"></span>Database Online';
+          } else {
+            statusDiv.innerHTML =
+              '<span class="status-indicator status-offline"></span>Database Offline';
+          }
+        } catch (error) {
+          statusDiv.innerHTML =
+            '<span class="status-indicator status-offline"></span>Database Offline';
+        }
+      }
+
+      async function checkAPIStatus() {
+        const statusDiv = document.getElementById("api-status");
+
+        try {
+          const response = await fetch("http://localhost:3001/health");
+          if (response.ok) {
+            statusDiv.innerHTML =
+              '<span class="status-indicator status-online"></span>API Online';
+          } else {
+            statusDiv.innerHTML =
+              '<span class="status-indicator status-offline"></span>API Offline';
+          }
+        } catch (error) {
+          statusDiv.innerHTML =
+            '<span class="status-indicator status-offline"></span>API Offline';
+        }
+      }
+
+      async function loadDatabaseSummary() {
+        const summaryDiv = document.getElementById("database-summary");
+
+        try {
+          const endpoints = [
+            {
+              name: "Users",
+              url: "http://localhost:3001/api/leaderboard/global",
+            },
+            { name: "Contests", url: "http://localhost:3001/api/contests" },
+            {
+              name: "Payments",
+              url: "http://localhost:3001/api/payments/recent/all",
+            },
+            {
+              name: "Prizes",
+              url: "http://localhost:3001/api/payments/prizes/all",
+            },
+          ];
+
+          let summaryHTML =
+            '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">';
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint.url);
+              const data = await response.json();
+              const count = data.success
+                ? data.data
+                  ? data.data.length
+                  : 0
+                : 0;
+
+              summaryHTML += `
+                            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 1rem; text-align: center;">
+                                <div style="font-size: 1.5rem; color: #d4af37; font-weight: bold;">${count}</div>
+                                <div style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.8);">${endpoint.name}</div>
+                            </div>
+                        `;
+            } catch (error) {
+              summaryHTML += `
+                            <div style="background: rgba(239, 68, 68, 0.1); border-radius: 8px; padding: 1rem; text-align: center;">
+                                <div style="font-size: 1.5rem; color: #ef4444; font-weight: bold;">❌</div>
+                                <div style="font-size: 0.9rem; color: #ef4444;">${endpoint.name}</div>
+                            </div>
+                        `;
+            }
+          }
+
+          summaryHTML += "</div>";
+          summaryDiv.innerHTML = summaryHTML;
+        } catch (error) {
+          summaryDiv.innerHTML =
+            '<div style="color: #ef4444;">❌ Failed to load database summary</div>';
+        }
+      }
+
+      async function testDatabase() {
+        alert("Testing database connection...");
+
+        try {
+          const response = await fetch(
+            "http://localhost:3001/api/leaderboard/global"
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            alert(
+              `✅ Database connection successful!\n\nFound ${
+                data.data ? data.data.length : 0
+              } users in database.`
+            );
+          } else {
+            alert(`❌ Database error: ${data.message}`);
+          }
+        } catch (error) {
+          alert(
+            `❌ Connection failed: ${error.message}\n\nMake sure the backend server is running:\ncd backend && npm run dev`
+          );
+        }
+      }
+
+      async function testAPI() {
+        const endpoints = [
+          "http://localhost:3001/health",
+          "http://localhost:3001/api/leaderboard/global",
+          "http://localhost:3001/api/contests",
+        ];
+
+        let results = "API Test Results:\n\n";
+
+        for (const endpoint of endpoints) {
+          try {
+            const response = await fetch(endpoint);
+            results += `✅ ${endpoint}: ${response.status} ${response.statusText}\n`;
+          } catch (error) {
+            results += `❌ ${endpoint}: ${error.message}\n`;
+          }
+        }
+
+        alert(results);
+      }
+
+      function startBackend() {
+        alert(
+          "To start the backend server:\n\n1. Open terminal\n2. cd backend\n3. npm run dev\n\nThe server will start on http://localhost:3001"
+        );
+      }
+
+      function runNodeScript() {
+        alert(
+          "To run the Node.js database viewer:\n\n1. Open terminal\n2. cd backend\n3. node view-database.js\n\nThis will show all database contents in the terminal."
+        );
+      }
+
+      function showSQLiteCommands() {
+        const commands = `SQLite CLI Commands:
+
+1. Open database:
+   sqlite3 backend/database/stellar_strider.db
+
+2. Show tables:
+   .tables
+
+3. Show table structure:
+   .schema users
+
+4. Query data:
+   SELECT * FROM users;
+   SELECT * FROM contests;
+   SELECT * FROM payment_history;
+
+5. Exit:
+   .quit`;
+
+        alert(commands);
+      }
+
+      function downloadDatabase() {
+        alert(
+          'To download the database file:\n\n1. Navigate to: backend/database/stellar_strider.db\n2. Right-click and "Save As"\n3. Or copy the file to your desired location\n\nThe database file is a standard SQLite file that can be opened with any SQLite browser.'
+        );
+      }
+
+      function refreshData() {
+        location.reload();
+      }
+    </script>
+  </body>
+</html>

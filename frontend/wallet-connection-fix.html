@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🔧 Wallet Connection Fix</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0a1929, #1e3a8a);
+        color: white;
+        padding: 2rem;
+        margin: 0;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+      }
+      h1 {
+        text-align: center;
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2rem;
+      }
+      .step {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .step h3 {
+        color: #d4af37;
+        margin-bottom: 1rem;
+      }
+      .btn {
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        border: none;
+        color: #0a1929;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 0.5rem;
+        transition: all 0.2s ease;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn.secondary {
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: #3b82f6;
+      }
+      .btn.success {
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #10b981;
+      }
+      .status {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        white-space: pre-wrap;
+        border-left: 4px solid #d4af37;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+      .success {
+        border-left-color: #10b981;
+        color: #10b981;
+      }
+      .error {
+        border-left-color: #ef4444;
+        color: #ef4444;
+      }
+      .warning {
+        border-left-color: #f59e0b;
+        color: #f59e0b;
+      }
+      .info {
+        border-left-color: #3b82f6;
+        color: #3b82f6;
+      }
+      .wallet-info {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+      .progress {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .progress-step {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
+      .progress-step.active {
+        background: #d4af37;
+        color: #0a1929;
+        border-color: #d4af37;
+      }
+      .progress-step.completed {
+        background: #10b981;
+        color: white;
+        border-color: #10b981;
+      }
+      .progress-line {
+        flex: 1;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.3);
+      }
+      .progress-line.completed {
+        background: #10b981;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔧 Wallet Connection Fix & Diagnostic</h1>
+
+      <!-- Progress Indicator -->
+      <div class="progress">
+        <div class="progress-step" id="step1">1</div>
+        <div class="progress-line" id="line1"></div>
+        <div class="progress-step" id="step2">2</div>
+        <div class="progress-line" id="line2"></div>
+        <div class="progress-step" id="step3">3</div>
+        <div class="progress-line" id="line3"></div>
+        <div class="progress-step" id="step4">✓</div>
+      </div>
+
+      <!-- Step 1: Check Wallet -->
+      <div class="step">
+        <h3>Step 1: Check Wallet Extension</h3>
+        <p>
+          First, let's check if you have a Stellar wallet extension installed.
+        </p>
+        <button class="btn" onclick="checkWallet()">🔍 Check Wallet</button>
+        <div id="wallet-check" class="status info">
+          Click "Check Wallet" to start...
+        </div>
+      </div>
+
+      <!-- Step 2: Install if needed -->
+      <div class="step" id="install-step" style="display: none">
+        <h3>Step 2: Install Wallet Extension</h3>
+        <p>
+          You need a Stellar wallet extension to connect. We recommend
+          Freighter.
+        </p>
+        <button class="btn" onclick="installWallet()">
+          📥 Install Freighter Wallet
+        </button>
+        <button class="btn secondary" onclick="checkWallet()">
+          🔄 Recheck After Install
+        </button>
+        <div class="status warning">
+          Please install the wallet extension and then click "Recheck After
+          Install"
+        </div>
+      </div>
+
+      <!-- Step 3: Connect -->
+      <div class="step" id="connect-step" style="display: none">
+        <h3>Step 3: Connect to Wallet</h3>
+        <p>Now let's connect to your wallet extension.</p>
+        <button class="btn" onclick="connectWallet()" id="connectBtn">
+          🚀 Connect Wallet
+        </button>
+        <div id="connect-status" class="status info">Ready to connect...</div>
+      </div>
+
+      <!-- Step 4: Success -->
+      <div class="step" id="success-step" style="display: none">
+        <h3>Step 4: Connection Successful! 🎉</h3>
+        <div id="wallet-details" class="wallet-info"></div>
+        <button class="btn success" onclick="testMainApp()">
+          🎯 Test Main App
+        </button>
+        <button class="btn secondary" onclick="copyConnectionCode()">
+          📋 Copy Connection Code
+        </button>
+      </div>
+
+      <!-- Troubleshooting -->
+      <div class="step">
+        <h3>🛠️ Troubleshooting</h3>
+        <button class="btn secondary" onclick="clearCache()">
+          🗑️ Clear Cache
+        </button>
+        <button class="btn secondary" onclick="resetConnection()">
+          🔄 Reset Connection
+        </button>
+        <button class="btn secondary" onclick="showLogs()">
+          📋 Show Debug Logs
+        </button>
+        <div id="troubleshoot-logs" class="status" style="display: none"></div>
+      </div>
+    </div>
+
+    <script>
+      let currentStep = 1;
+      let walletData = null;
+      let logs = [];
+
+      function log(message, type = "info") {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = `[${timestamp}] ${message}`;
+        logs.push({ message: logEntry, type });
+        console.log(logEntry);
+      }
+
+      function updateProgress(step) {
+        currentStep = step;
+
+        // Update progress indicators
+        for (let i = 1; i <= 4; i++) {
+          const stepEl = document.getElementById(`step${i}`);
+          const lineEl = document.getElementById(`line${i}`);
+
+          if (i < step) {
+            stepEl.className = "progress-step completed";
+            if (lineEl) lineEl.className = "progress-line completed";
+          } else if (i === step) {
+            stepEl.className = "progress-step active";
+          } else {
+            stepEl.className = "progress-step";
+            if (lineEl) lineEl.className = "progress-line";
+          }
+        }
+      }
+
+      async function checkWallet() {
+        log("Checking for wallet extension...", "info");
+        const checkDiv = document.getElementById("wallet-check");
+
+        checkDiv.innerHTML = "🔍 Checking for wallet extension...";
+        checkDiv.className = "status info";
+
+        // Check for Freighter
+        if (typeof window.freighter !== "undefined") {
+          log("Freighter wallet detected!", "success");
+          checkDiv.innerHTML = "✅ Freighter wallet detected and ready!";
+          checkDiv.className = "status success";
+
+          // Check if already connected
+          try {
+            const isAllowed = await window.freighter.isAllowed();
+            if (isAllowed) {
+              const publicKey = await window.freighter.getPublicKey();
+              if (publicKey) {
+                log("Already connected to wallet", "success");
+                walletData = {
+                  publicKey,
+                  network: await window.freighter.getNetwork(),
+                  walletType: "freighter",
+                };
+                showSuccess();
+                return;
+              }
+            }
+          } catch (error) {
+            log(`Connection check error: ${error.message}`, "warning");
+          }
+
+          showConnectStep();
+        } else {
+          log("No wallet extension found", "error");
+          checkDiv.innerHTML =
+            "❌ No wallet extension found. You need to install one first.";
+          checkDiv.className = "status error";
+          showInstallStep();
+        }
+      }
+
+      function showInstallStep() {
+        updateProgress(2);
+        document.getElementById("install-step").style.display = "block";
+        document.getElementById("connect-step").style.display = "none";
+        document.getElementById("success-step").style.display = "none";
+      }
+
+      function showConnectStep() {
+        updateProgress(3);
+        document.getElementById("install-step").style.display = "none";
+        document.getElementById("connect-step").style.display = "block";
+        document.getElementById("success-step").style.display = "none";
+      }
+
+      function showSuccess() {
+        updateProgress(4);
+        document.getElementById("install-step").style.display = "none";
+        document.getElementById("connect-step").style.display = "none";
+        document.getElementById("success-step").style.display = "block";
+
+        const detailsDiv = document.getElementById("wallet-details");
+        detailsDiv.innerHTML = `
+                <h4>🚀 Wallet Connected Successfully!</h4>
+                <p><strong>Public Key:</strong> ${walletData.publicKey}</p>
+                <p><strong>Short Address:</strong> ${walletData.publicKey.slice(
+                  0,
+                  6
+                )}...${walletData.publicKey.slice(-4)}</p>
+                <p><strong>Network:</strong> ${walletData.network}</p>
+                <p><strong>Wallet Type:</strong> ${walletData.walletType}</p>
+                <p><strong>Status:</strong> ✅ Connected and Ready</p>
+            `;
+      }
+
+      function installWallet() {
+        log("Opening Freighter installation page", "info");
+        window.open(
+          "https://chrome.google.com/webstore/detail/freighter/bcacfldlkkdogcmkkibnjlakofdplcbk",
+          "_blank"
+        );
+      }
+
+      async function connectWallet() {
+        if (!window.freighter) {
+          log("Wallet extension not found", "error");
+          document.getElementById("connect-status").innerHTML =
+            "❌ Wallet extension not found!";
+          document.getElementById("connect-status").className = "status error";
+          return;
+        }
+
+        const connectBtn = document.getElementById("connectBtn");
+        const statusDiv = document.getElementById("connect-status");
+
+        connectBtn.disabled = true;
+        connectBtn.textContent = "🔄 Connecting...";
+        statusDiv.innerHTML = "🔄 Requesting wallet connection...";
+        statusDiv.className = "status info";
+
+        try {
+          log("Requesting wallet access...", "info");
+
+          // Request access
+          await window.freighter.requestAccess();
+          log("Access request completed", "info");
+
+          // Small delay for processing
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          // Check if permission granted
+          const isAllowed = await window.freighter.isAllowed();
+          log(`Permission granted: ${isAllowed}`, "info");
+
+          if (!isAllowed) {
+            throw new Error("Connection was rejected by user");
+          }
+
+          // Get wallet information
+          const publicKey = await window.freighter.getPublicKey();
+          const network = await window.freighter.getNetwork();
+
+          if (!publicKey) {
+            throw new Error("No account found in wallet");
+          }
+
+          log("Connection successful!", "success");
+
+          walletData = {
+            publicKey,
+            network,
+            walletType: "freighter",
+            connectedAt: new Date().toISOString(),
+          };
+
+          statusDiv.innerHTML = "✅ Successfully connected to wallet!";
+          statusDiv.className = "status success";
+          connectBtn.textContent = "✅ Connected";
+
+          setTimeout(showSuccess, 1000);
+        } catch (error) {
+          log(`Connection failed: ${error.message}`, "error");
+
+          let errorMessage = "❌ Connection failed: ";
+          if (
+            error.message.includes("User declined") ||
+            error.message.includes("rejected")
+          ) {
+            errorMessage +=
+              "Connection was cancelled. Please try again and approve the request.";
+          } else if (error.message.includes("No account")) {
+            errorMessage +=
+              "No account found. Please create an account in your wallet first.";
+          } else {
+            errorMessage += error.message;
+          }
+
+          statusDiv.innerHTML = errorMessage;
+          statusDiv.className = "status error";
+          connectBtn.disabled = false;
+          connectBtn.textContent = "🚀 Connect Wallet";
+        }
+      }
+
+      function testMainApp() {
+        log("Opening main application", "info");
+        window.open("http://localhost:5173", "_blank");
+      }
+
+      function copyConnectionCode() {
+        const code = `
+// Working wallet connection code
+const connectWallet = async () => {
+    if (!window.freighter) {
+        alert('Please install Freighter wallet extension');
+        return;
+    }
+    
+    try {
+        await window.freighter.requestAccess();
+        const isAllowed = await window.freighter.isAllowed();
+        
+        if (isAllowed) {
+            const publicKey = await window.freighter.getPublicKey();
+            const network = await window.freighter.getNetwork();
+            
+            console.log('Connected:', { publicKey, network });
+            return { publicKey, network, walletType: 'freighter' };
+        }
+    } catch (error) {
+        console.error('Connection failed:', error);
+    }
+};
+            `;
+
+        navigator.clipboard.writeText(code).then(() => {
+          alert("Connection code copied to clipboard!");
+        });
+      }
+
+      function clearCache() {
+        log("Clearing browser cache and localStorage", "info");
+        localStorage.clear();
+        sessionStorage.clear();
+        location.reload();
+      }
+
+      function resetConnection() {
+        log("Resetting connection state", "info");
+        walletData = null;
+        currentStep = 1;
+        updateProgress(1);
+        document.getElementById("install-step").style.display = "none";
+        document.getElementById("connect-step").style.display = "none";
+        document.getElementById("success-step").style.display = "none";
+        checkWallet();
+      }
+
+      function showLogs() {
+        const logsDiv = document.getElementById("troubleshoot-logs");
+        if (logsDiv.style.display === "none") {
+          let logText = "Debug Logs:\n\n";
+          logs.forEach((log) => {
+            logText += `${log.message}\n`;
+          });
+          logsDiv.innerHTML = logText;
+          logsDiv.className = `status ${logs[logs.length - 1]?.type || "info"}`;
+          logsDiv.style.display = "block";
+        } else {
+          logsDiv.style.display = "none";
+        }
+      }
+
+      // Auto-start check on page load
+      window.addEventListener("load", () => {
+        setTimeout(checkWallet, 1000);
+      });
+
+      // Monitor for wallet installation
+      let checkInterval = setInterval(() => {
+        if (currentStep === 2 && window.freighter) {
+          clearInterval(checkInterval);
+          checkWallet();
+        }
+      }, 2000);
+    </script>
+  </body>
+</html>

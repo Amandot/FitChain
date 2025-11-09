@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🗄️ Database Locations & Management</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0a1929, #1e3a8a);
+        color: white;
+        margin: 0;
+        padding: 2rem;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+      }
+      h1 {
+        text-align: center;
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2rem;
+      }
+      .section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 2rem;
+        margin: 2rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .section h3 {
+        color: #d4af37;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+      }
+      .file-path {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        border-left: 4px solid #d4af37;
+        overflow-x: auto;
+      }
+      .btn {
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        border: none;
+        color: #0a1929;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 0.5rem;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+      }
+      .btn.secondary {
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: #3b82f6;
+      }
+      .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+      .status-online {
+        background: #10b981;
+      }
+      .status-offline {
+        background: #ef4444;
+      }
+      .database-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+      }
+      .database-table th,
+      .database-table td {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 0.75rem;
+        text-align: left;
+      }
+      .database-table th {
+        background: rgba(212, 175, 55, 0.3);
+        font-weight: 600;
+      }
+      .connection-test {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+      }
+      .error-box {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        color: #ef4444;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🗄️ Database Locations & Management</h1>
+
+      <!-- Database Locations -->
+      <div class="section">
+        <h3>📍 Database File Locations</h3>
+
+        <h4>Main Database:</h4>
+        <div class="file-path">
+          📁 Project Root └── backend/ └── database/ └── stellar_strider.db ←
+          Main SQLite Database
+        </div>
+
+        <h4>Configuration Files:</h4>
+        <div class="file-path">
+          📁 Project Root ├── backend/ │ ├── config/ │ │ └── database.js ←
+          Database configuration │ └── view-database.js ← Database viewer script
+          └── database-viewer.html ← Web-based database viewer
+        </div>
+
+        <h4>Database Schema:</h4>
+        <div class="file-path">
+          📁 Project Root └── backend/ └── database/ └── schema.sql ← Database
+          schema definitions
+        </div>
+      </div>
+
+      <!-- Database Tables -->
+      <div class="section">
+        <h3>🗂️ Database Tables Structure</h3>
+        <table class="database-table">
+          <thead>
+            <tr>
+              <th>Table Name</th>
+              <th>Purpose</th>
+              <th>Key Fields</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>users</td>
+              <td>User accounts and profiles</td>
+              <td>id, wallet_address, username, created_at</td>
+            </tr>
+            <tr>
+              <td>contests</td>
+              <td>Fitness contests and challenges</td>
+              <td>id, title, start_date, end_date, prize_pool</td>
+            </tr>
+            <tr>
+              <td>activities</td>
+              <td>User fitness activities</td>
+              <td>id, user_id, distance, duration, gps_data</td>
+            </tr>
+            <tr>
+              <td>leaderboard</td>
+              <td>User rankings and scores</td>
+              <td>id, user_id, total_distance, rank</td>
+            </tr>
+            <tr>
+              <td>payments</td>
+              <td>Stellar payment transactions</td>
+              <td>id, from_wallet, to_wallet, amount, tx_hash</td>
+            </tr>
+            <tr>
+              <td>prize_distributions</td>
+              <td>Contest prize payouts</td>
+              <td>id, contest_id, user_id, amount, status</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Database Access Methods -->
+      <div class="section">
+        <h3>🔧 Database Access Methods</h3>
+
+        <h4>1. Web-based Database Viewer</h4>
+        <p>View and browse database contents in your browser:</p>
+        <a href="database-viewer.html" class="btn">🌐 Open Database Viewer</a>
+
+        <h4>2. Backend API Endpoints</h4>
+        <div class="file-path">
+          GET /api/leaderboard/global ← Global leaderboard data GET
+          /api/contests ← All contests GET /api/payments/recent/all ← Payment
+          history GET /api/payments/prizes/all ← Prize distributions POST
+          /api/users/register ← Register new user POST /api/activities/submit ←
+          Submit fitness activity
+        </div>
+
+        <h4>3. Direct Database Access</h4>
+        <div class="file-path">
+          # Using SQLite CLI sqlite3 backend/database/stellar_strider.db # Using
+          Node.js script node backend/view-database.js
+        </div>
+      </div>
+
+      <!-- Connection Status -->
+      <div class="section">
+        <h3>🔌 Connection Status</h3>
+        <div id="connection-status">
+          <p>
+            <span class="status-indicator status-offline"></span>Checking
+            connections...
+          </p>
+        </div>
+
+        <div class="connection-test">
+          <h4>🧪 Test Database Connection</h4>
+          <button class="btn" onclick="testDatabaseConnection()">
+            🔄 Test Database
+          </button>
+          <button class="btn secondary" onclick="testBackendAPI()">
+            🌐 Test Backend API
+          </button>
+          <div id="test-results"></div>
+        </div>
+      </div>
+
+      <!-- Wallet Connection Fix -->
+      <div class="section">
+        <h3>💼 Wallet Connection Issue Fix</h3>
+        <p>If the wallet connection is not working, try these solutions:</p>
+
+        <div class="error-box">
+          <h4>❌ Common Issues:</h4>
+          <ul>
+            <li>Freighter wallet extension not installed</li>
+            <li>Wallet is locked or not set up</li>
+            <li>Connection request was rejected</li>
+            <li>Browser blocking the connection</li>
+          </ul>
+        </div>
+
+        <h4>🔧 Solutions:</h4>
+        <div style="display: grid; gap: 1rem; margin: 1rem 0">
+          <a href="wallet-connection-fix.html" class="btn">
+            🛠️ Full Diagnostic Tool
+          </a>
+          <a href="connection-test-page.html" class="btn secondary">
+            🧪 Quick Connection Test
+          </a>
+          <a href="freighter-connection-guide.html" class="btn secondary">
+            📋 Step-by-Step Guide
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="section">
+        <h3>🚀 Quick Actions</h3>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+          "
+        >
+          <a href="http://localhost:5173" class="btn"> 🎯 Main App </a>
+          <a href="database-viewer.html" class="btn secondary">
+            🗄️ View Database
+          </a>
+          <a href="wallet-test-page.html" class="btn secondary">
+            💼 Wallet Test
+          </a>
+          <button class="btn secondary" onclick="startBackend()">
+            🚀 Start Backend
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Test database connection
+      async function testDatabaseConnection() {
+        const resultsDiv = document.getElementById("test-results");
+        resultsDiv.innerHTML = "<p>🔄 Testing database connection...</p>";
+
+        try {
+          const response = await fetch(
+            "http://localhost:3001/api/leaderboard/global"
+          );
+          const data = await response.json();
+
+          if (data.success) {
+            resultsDiv.innerHTML =
+              '<p style="color: #10b981;">✅ Database connection successful!</p>';
+          } else {
+            resultsDiv.innerHTML =
+              '<p style="color: #ef4444;">❌ Database error: ' +
+              data.message +
+              "</p>";
+          }
+        } catch (error) {
+          resultsDiv.innerHTML =
+            '<p style="color: #ef4444;">❌ Connection failed: ' +
+            error.message +
+            "</p>";
+        }
+      }
+
+      // Test backend API
+      async function testBackendAPI() {
+        const resultsDiv = document.getElementById("test-results");
+        resultsDiv.innerHTML = "<p>🔄 Testing backend API...</p>";
+
+        try {
+          const response = await fetch("http://localhost:3001/health");
+          if (response.ok) {
+            resultsDiv.innerHTML =
+              '<p style="color: #10b981;">✅ Backend API is running!</p>';
+          } else {
+            resultsDiv.innerHTML =
+              '<p style="color: #ef4444;">❌ Backend API error</p>';
+          }
+        } catch (error) {
+          resultsDiv.innerHTML =
+            '<p style="color: #ef4444;">❌ Backend not running. Start with: npm run dev</p>';
+        }
+      }
+
+      // Start backend (placeholder)
+      function startBackend() {
+        alert(
+          "To start the backend server:\n\n1. Open terminal\n2. cd backend\n3. npm run dev\n\nOr check the README for detailed instructions."
+        );
+      }
+
+      // Check connection status on page load
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          testDatabaseConnection();
+          checkWalletConnection();
+        }, 1000);
+      });
+
+      // Check wallet connection
+      function checkWalletConnection() {
+        const statusDiv = document.getElementById("connection-status");
+
+        if (window.freighter) {
+          statusDiv.innerHTML =
+            '<p><span class="status-indicator status-online"></span>Freighter wallet detected</p>';
+        } else {
+          statusDiv.innerHTML =
+            '<p><span class="status-indicator status-offline"></span>Freighter wallet not found</p>';
+        }
+      }
+    </script>
+  </body>
+</html>

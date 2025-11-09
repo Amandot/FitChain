@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Freighter Connection</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #0a1929;
+        color: white;
+        padding: 40px;
+        text-align: center;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 40px;
+        border-radius: 20px;
+      }
+      button {
+        background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+        color: #0a1929;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 10px;
+        transition: all 0.3s ease;
+      }
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .result {
+        margin: 20px 0;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        font-family: monospace;
+      }
+      .success {
+        color: #10b981;
+      }
+      .error {
+        color: #ef4444;
+      }
+      .info {
+        color: #3b82f6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚀 Freighter Wallet Test</h1>
+      <p>Test direct connection to Freighter wallet</p>
+
+      <div>
+        <button onclick="checkFreighter()">🔍 Check Freighter</button>
+        <button onclick="connectFreighter()">🔗 Connect</button>
+        <button onclick="getPublicKey()">🔑 Get Public Key</button>
+        <button onclick="getNetwork()">🌐 Get Network</button>
+      </div>
+
+      <div id="result" class="result">
+        Click a button to test Freighter connection...
+      </div>
+    </div>
+
+    <script>
+      let connectedKey = null;
+
+      function log(message, type = "info") {
+        const result = document.getElementById("result");
+        const timestamp = new Date().toLocaleTimeString();
+        result.innerHTML =
+          `<div class="${type}">[${timestamp}] ${message}</div>` +
+          result.innerHTML;
+        console.log(message);
+      }
+
+      function checkFreighter() {
+        log("🔍 Checking for Freighter...", "info");
+
+        if (window.freighter) {
+          log("✅ Freighter detected in window object", "success");
+          log(
+            `📋 Freighter object: ${JSON.stringify(
+              Object.keys(window.freighter)
+            )}`,
+            "info"
+          );
+        } else {
+          log("❌ Freighter not found in window object", "error");
+          log(
+            "💡 Make sure Freighter extension is installed and enabled",
+            "info"
+          );
+        }
+      }
+
+      async function connectFreighter() {
+        log("🔗 Attempting to connect to Freighter...", "info");
+
+        try {
+          if (!window.freighter) {
+            throw new Error("Freighter not found");
+          }
+
+          log("📞 Requesting access...", "info");
+          await window.freighter.requestAccess();
+
+          log("🔑 Getting public key...", "info");
+          const publicKey = await window.freighter.getPublicKey();
+
+          if (publicKey) {
+            connectedKey = publicKey;
+            log(`✅ Connected! Public Key: ${publicKey}`, "success");
+            log(
+              `📋 Formatted: ${publicKey.slice(0, 6)}...${publicKey.slice(-4)}`,
+              "success"
+            );
+          } else {
+            log("❌ No public key received", "error");
+          }
+        } catch (error) {
+          log(`❌ Connection failed: ${error.message}`, "error");
+
+          if (error.message.includes("User declined access")) {
+            log(
+              "💡 Please approve the connection request in Freighter",
+              "info"
+            );
+          } else if (error.message.includes("not found")) {
+            log("💡 Please install Freighter extension first", "info");
+          }
+        }
+      }
+
+      async function getPublicKey() {
+        try {
+          if (!window.freighter) {
+            throw new Error("Freighter not found");
+          }
+
+          const publicKey = await window.freighter.getPublicKey();
+          log(
+            `🔑 Current Public Key: ${publicKey || "None"}`,
+            publicKey ? "success" : "error"
+          );
+        } catch (error) {
+          log(`❌ Error getting public key: ${error.message}`, "error");
+        }
+      }
+
+      async function getNetwork() {
+        try {
+          if (!window.freighter) {
+            throw new Error("Freighter not found");
+          }
+
+          const network = await window.freighter.getNetwork();
+          log(`🌐 Current Network: ${network}`, "success");
+        } catch (error) {
+          log(`❌ Error getting network: ${error.message}`, "error");
+        }
+      }
+
+      // Auto-check on page load
+      window.addEventListener("load", () => {
+        setTimeout(checkFreighter, 1000);
+      });
+    </script>
+  </body>
+</html>

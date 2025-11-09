@@ -1,0 +1,362 @@
+.contest-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 25px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.contest-card:hover {
+    border-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.1);
+}
+
+.contest-card.joined {
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.contest-card.joined:hover {
+    border-color: rgba(16, 185, 129, 0.5);
+    box-shadow: 0 10px 40px rgba(16, 185, 129, 0.1);
+}
+
+.contest-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.contest-badge {
+    display: flex;
+    gap: 8px;
+}
+
+.age-category {
+    background: linear-gradient(135deg, #D4AF37 0%, #F7DC6F 100%);
+    color: #0A1929;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.duration {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3B82F6;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.contest-status {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.contest-content {
+    margin-bottom: 25px;
+}
+
+.contest-title {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
+
+.contest-description {
+    color: #B0BEC5;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.contest-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat {
+    text-align: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-label {
+    display: block;
+    color: #B0BEC5;
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.progress-section {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 12px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #10B981;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+    border-radius: 4px;
+    transition: width 1s ease-out;
+}
+
+.contest-requirements {
+    margin-bottom: 20px;
+}
+
+.contest-requirements h4 {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.contest-requirements p {
+    color: #B0BEC5;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.contest-reward {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.reward-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.reward-details h4 {
+    color: #D4AF37;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.reward-details p {
+    color: #D4AF37;
+    font-size: 0.85rem;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.contest-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.details-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.details-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.join-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #D4AF37 0%, #F7DC6F 100%);
+    border: none;
+    color: #0A1929;
+    padding: 12px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.join-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+.join-btn:disabled {
+    background: rgba(255, 255, 255, 0.1);
+    color: #6B7280;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.joined-btn {
+    flex: 1;
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10B981;
+    padding: 12px 20px;
+    border-radius: 12px;
+    cursor: default;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.contest-details {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-section {
+    margin-bottom: 20px;
+}
+
+.detail-section h5 {
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.detail-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.detail-section li {
+    color: #B0BEC5;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 6px;
+    padding-left: 15px;
+    position: relative;
+}
+
+.detail-section li::before {
+    content: '•';
+    color: #D4AF37;
+    position: absolute;
+    left: 0;
+}
+
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.timeline-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.timeline-date {
+    color: #D4AF37;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.timeline-desc {
+    color: #B0BEC5;
+    font-size: 0.8rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .contest-card {
+        padding: 20px;
+    }
+
+    .contest-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .contest-badge {
+        flex-wrap: wrap;
+    }
+
+    .contest-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .contest-actions {
+        flex-direction: column;
+    }
+
+    .contest-reward {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .contest-card {
+        padding: 15px;
+    }
+
+    .contest-title {
+        font-size: 1.1rem;
+    }
+
+    .reward-icon {
+        font-size: 1.5rem;
+    }
+}

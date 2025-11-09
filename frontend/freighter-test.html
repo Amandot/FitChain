@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🚀 Freighter Connection Test & Debug</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0a1929, #1e3a8a);
+        color: white;
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+      }
+      h1 {
+        text-align: center;
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2rem;
+      }
+      .test-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .test-button {
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        border: none;
+        color: #0a1929;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 0.5rem;
+        transition: all 0.2s ease;
+      }
+      .test-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+      }
+      .test-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .result {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        white-space: pre-wrap;
+        border-left: 4px solid #d4af37;
+      }
+      .success {
+        border-left-color: #10b981;
+        color: #10b981;
+      }
+      .error {
+        border-left-color: #ef4444;
+        color: #ef4444;
+      }
+      .warning {
+        border-left-color: #f59e0b;
+        color: #f59e0b;
+      }
+      .info {
+        border-left-color: #3b82f6;
+        color: #3b82f6;
+      }
+      .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+      .status-connected {
+        background: #10b981;
+      }
+      .status-disconnected {
+        background: #ef4444;
+      }
+      .status-unknown {
+        background: #6b7280;
+      }
+      .connection-info {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+      .install-link {
+        color: #d4af37;
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .install-link:hover {
+        color: #ffd700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚀 Freighter Wallet Connection Test & Debug</h1>
+
+      <div class="test-section">
+        <h3>📋 System Status</h3>
+        <div id="system-status">Checking system...</div>
+      </div>
+
+      <div class="test-section">
+        <h3>🔍 Freighter Detection</h3>
+        <button class="test-button" onclick="testFreighterDetection()">
+          🔍 Check Freighter Installation
+        </button>
+        <div id="detection-result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>🔗 Connection Test</h3>
+        <button class="test-button" onclick="testConnection()" id="connect-btn">
+          🔗 Test Connection
+        </button>
+        <button
+          class="test-button"
+          onclick="testPermissions()"
+          id="permissions-btn"
+        >
+          🔐 Check Permissions
+        </button>
+        <div id="connection-result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>📊 Wallet Information</h3>
+        <button class="test-button" onclick="getWalletInfo()" id="info-btn">
+          📊 Get Wallet Info
+        </button>
+        <div id="wallet-info"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>🌐 Network Test</h3>
+        <button class="test-button" onclick="testNetwork()" id="network-btn">
+          🌐 Test Network
+        </button>
+        <div id="network-result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>🔄 Full Integration Test</h3>
+        <button class="test-button" onclick="runFullTest()" id="full-test-btn">
+          🔄 Run Complete Test
+        </button>
+        <div id="full-test-result"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>🛠️ Troubleshooting</h3>
+        <div id="troubleshooting">
+          <p><strong>Common Issues & Solutions:</strong></p>
+          <ul>
+            <li>
+              <strong>Freighter not detected:</strong> Install from
+              <a
+                href="https://chrome.google.com/webstore/detail/freighter/bcacfldlkkdogcmkkibnjlakofdplcbk"
+                target="_blank"
+                class="install-link"
+                >Chrome Web Store</a
+              >
+            </li>
+            <li>
+              <strong>Connection rejected:</strong> Make sure Freighter is
+              unlocked and approve the connection request
+            </li>
+            <li>
+              <strong>No public key:</strong> Create or import a Stellar account
+              in Freighter
+            </li>
+            <li>
+              <strong>Network issues:</strong> Check your internet connection
+              and Freighter network settings
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentWalletInfo = null;
+
+      // Initialize system check
+      window.addEventListener("load", () => {
+        checkSystemStatus();
+        testFreighterDetection();
+      });
+
+      function log(elementId, message, type = "info") {
+        const element = document.getElementById(elementId);
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = `[${timestamp}] ${message}`;
+
+        if (
+          element.innerHTML.includes("Checking") ||
+          element.innerHTML === ""
+        ) {
+          element.innerHTML = "";
+        }
+
+        element.innerHTML += `<div class="result ${type}">${logEntry}</div>`;
+        console.log(logEntry);
+      }
+
+      function checkSystemStatus() {
+        const userAgent = navigator.userAgent;
+        const isChrome = userAgent.includes("Chrome");
+        const isFirefox = userAgent.includes("Firefox");
+        const isEdge = userAgent.includes("Edge");
+
+        let browserInfo = "Unknown browser";
+        if (isChrome) browserInfo = "Chrome (✅ Supported)";
+        else if (isFirefox) browserInfo = "Firefox (⚠️ Limited support)";
+        else if (isEdge) browserInfo = "Edge (✅ Supported)";
+        else browserInfo = "Unknown browser (❌ May not be supported)";
+
+        document.getElementById("system-status").innerHTML = `
+                <div class="result info">Browser: ${browserInfo}</div>
+                <div class="result info">URL: ${window.location.href}</div>
+                <div class="result info">Protocol: ${
+                  window.location.protocol
+                }</div>
+                <div class="result info">Timestamp: ${new Date().toISOString()}</div>
+            `;
+      }
+
+      async function testFreighterDetection() {
+        log(
+          "detection-result",
+          "🔍 Checking for Freighter extension...",
+          "info"
+        );
+
+        // Check if window.freighter exists
+        if (typeof window.freighter === "undefined") {
+          log(
+            "detection-result",
+            "❌ Freighter not detected in window object",
+            "error"
+          );
+          log(
+            "detection-result",
+            "💡 Please install Freighter extension and refresh the page",
+            "warning"
+          );
+          return false;
+        }
+
+        log(
+          "detection-result",
+          "✅ Freighter object found in window",
+          "success"
+        );
+
+        // Check Freighter methods
+        const methods = [
+          "isConnected",
+          "getPublicKey",
+          "requestAccess",
+          "isAllowed",
+          "getNetwork",
+        ];
+        for (const method of methods) {
+          if (typeof window.freighter[method] === "function") {
+            log("detection-result", `✅ Method ${method} available`, "success");
+          } else {
+            log("detection-result", `❌ Method ${method} missing`, "error");
+          }
+        }
+
+        return true;
+      }
+
+      async function testPermissions() {
+        if (!window.freighter) {
+          log("connection-result", "❌ Freighter not available", "error");
+          return;
+        }
+
+        try {
+          log("connection-result", "🔐 Checking permissions...", "info");
+
+          const isAllowed = await window.freighter.isAllowed();
+          log(
+            "connection-result",
+            `Permissions status: ${
+              isAllowed ? "✅ Allowed" : "❌ Not allowed"
+            }`,
+            isAllowed ? "success" : "warning"
+          );
+
+          if (!isAllowed) {
+            log(
+              "connection-result",
+              "💡 You need to connect to Freighter first",
+              "warning"
+            );
+          }
+
+          return isAllowed;
+        } catch (error) {
+          log(
+            "connection-result",
+            `❌ Permission check failed: ${error.message}`,
+            "error"
+          );
+          return false;
+        }
+      }
+
+      async function testConnection() {
+        if (!window.freighter) {
+          log("connection-result", "❌ Freighter not available", "error");
+          return;
+        }
+
+        try {
+          log(
+            "connection-result",
+            "🔗 Requesting access to Freighter...",
+            "info"
+          );
+
+          // Request access
+          await window.freighter.requestAccess();
+          log("connection-result", "✅ Access granted by user", "success");
+
+          // Check if allowed
+          const isAllowed = await window.freighter.isAllowed();
+          log(
+            "connection-result",
+            `Permission status: ${isAllowed ? "✅ Allowed" : "❌ Not allowed"}`,
+            isAllowed ? "success" : "error"
+          );
+
+          if (isAllowed) {
+            // Get public key
+            const publicKey = await window.freighter.getPublicKey();
+            if (publicKey) {
+              log(
+                "connection-result",
+                `✅ Public key retrieved: ${publicKey}`,
+                "success"
+              );
+              log(
+                "connection-result",
+                `📋 Formatted: ${publicKey.slice(0, 6)}...${publicKey.slice(
+                  -4
+                )}`,
+                "info"
+              );
+              currentWalletInfo = {
+                publicKey,
+                walletType: "freighter",
+                isConnected: true,
+              };
+              return true;
+            } else {
+              log("connection-result", "❌ No public key returned", "error");
+              return false;
+            }
+          }
+        } catch (error) {
+          log(
+            "connection-result",
+            `❌ Connection failed: ${error.message}`,
+            "error"
+          );
+          log(
+            "connection-result",
+            `Error details: ${JSON.stringify(error, null, 2)}`,
+            "error"
+          );
+          return false;
+        }
+      }
+
+      async function getWalletInfo() {
+        if (!currentWalletInfo) {
+          log(
+            "wallet-info",
+            "⚠️ No wallet connected. Please connect first.",
+            "warning"
+          );
+          return;
+        }
+
+        try {
+          log("wallet-info", "📊 Retrieving wallet information...", "info");
+
+          const publicKey = await window.freighter.getPublicKey();
+          const network = await window.freighter.getNetwork();
+          const isAllowed = await window.freighter.isAllowed();
+
+          log("wallet-info", `✅ Public Key: ${publicKey}`, "success");
+          log("wallet-info", `✅ Network: ${network}`, "success");
+          log("wallet-info", `✅ Allowed: ${isAllowed}`, "success");
+          log("wallet-info", `✅ Wallet Type: Freighter`, "success");
+
+          // Display formatted info
+          document.getElementById("wallet-info").innerHTML += `
+                    <div class="connection-info">
+                        <h4>🚀 Connected Wallet Information</h4>
+                        <p><strong>Address:</strong> ${publicKey}</p>
+                        <p><strong>Short Address:</strong> ${publicKey.slice(
+                          0,
+                          6
+                        )}...${publicKey.slice(-4)}</p>
+                        <p><strong>Network:</strong> ${network}</p>
+                        <p><strong>Status:</strong> <span class="status-indicator status-connected"></span>Connected</p>
+                        <p><strong>Wallet Type:</strong> Freighter</p>
+                    </div>
+                `;
+        } catch (error) {
+          log(
+            "wallet-info",
+            `❌ Failed to get wallet info: ${error.message}`,
+            "error"
+          );
+        }
+      }
+
+      async function testNetwork() {
+        if (!window.freighter) {
+          log("network-result", "❌ Freighter not available", "error");
+          return;
+        }
+
+        try {
+          log("network-result", "🌐 Testing network connection...", "info");
+
+          const network = await window.freighter.getNetwork();
+          log("network-result", `✅ Current network: ${network}`, "success");
+
+          // Test Horizon connection
+          const horizonUrl =
+            network === "MAINNET"
+              ? "https://horizon.stellar.org"
+              : "https://horizon-testnet.stellar.org";
+
+          log(
+            "network-result",
+            `🔗 Testing Horizon connection: ${horizonUrl}`,
+            "info"
+          );
+
+          const response = await fetch(horizonUrl);
+          if (response.ok) {
+            log("network-result", "✅ Horizon server reachable", "success");
+          } else {
+            log(
+              "network-result",
+              `⚠️ Horizon server returned status: ${response.status}`,
+              "warning"
+            );
+          }
+        } catch (error) {
+          log(
+            "network-result",
+            `❌ Network test failed: ${error.message}`,
+            "error"
+          );
+        }
+      }
+
+      async function runFullTest() {
+        log(
+          "full-test-result",
+          "🔄 Starting comprehensive Freighter test...",
+          "info"
+        );
+
+        // Step 1: Detection
+        log("full-test-result", "1️⃣ Testing Freighter detection...", "info");
+        const detected = await testFreighterDetection();
+        if (!detected) {
+          log("full-test-result", "❌ Test failed at detection step", "error");
+          return;
+        }
+
+        // Step 2: Connection
+        log("full-test-result", "2️⃣ Testing connection...", "info");
+        const connected = await testConnection();
+        if (!connected) {
+          log("full-test-result", "❌ Test failed at connection step", "error");
+          return;
+        }
+
+        // Step 3: Wallet info
+        log("full-test-result", "3️⃣ Getting wallet information...", "info");
+        await getWalletInfo();
+
+        // Step 4: Network test
+        log("full-test-result", "4️⃣ Testing network...", "info");
+        await testNetwork();
+
+        log(
+          "full-test-result",
+          "🎉 All tests completed successfully!",
+          "success"
+        );
+        log(
+          "full-test-result",
+          "✅ Freighter is working correctly with your application",
+          "success"
+        );
+      }
+
+      // Auto-refresh detection every 5 seconds
+      setInterval(() => {
+        if (!currentWalletInfo) {
+          testFreighterDetection();
+        }
+      }, 5000);
+    </script>
+  </body>
+</html>

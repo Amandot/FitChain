@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🔧 Wallet Connection Test Page</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0a1929, #1e3a8a);
+        color: white;
+        margin: 0;
+        padding: 2rem;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+      }
+      h1 {
+        text-align: center;
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2rem;
+      }
+      .test-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .btn {
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        border: none;
+        color: #0a1929;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 0.5rem;
+        transition: all 0.2s ease;
+        width: 100%;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .status {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        border-left: 4px solid #d4af37;
+      }
+      .success {
+        border-left-color: #10b981;
+        color: #10b981;
+      }
+      .error {
+        border-left-color: #ef4444;
+        color: #ef4444;
+      }
+      .warning {
+        border-left-color: #f59e0b;
+        color: #f59e0b;
+      }
+      .info {
+        border-left-color: #3b82f6;
+        color: #3b82f6;
+      }
+      .wallet-info {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+      .links {
+        display: grid;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+      .link-btn {
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: #3b82f6;
+        padding: 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.2s ease;
+      }
+      .link-btn:hover {
+        background: rgba(59, 130, 246, 0.3);
+        transform: translateY(-1px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔧 Wallet Connection Test</h1>
+
+      <div class="test-section">
+        <h3>🔍 Quick Connection Test</h3>
+        <p>Test your wallet connection with one click:</p>
+        <button class="btn" onclick="quickTest()" id="testBtn">
+          🚀 Test Connection
+        </button>
+        <div id="testResult" class="status info">
+          Click "Test Connection" to check your wallet setup
+        </div>
+      </div>
+
+      <div class="test-section" id="walletInfo" style="display: none">
+        <h3>✅ Connection Successful!</h3>
+        <div id="walletDetails" class="wallet-info"></div>
+      </div>
+
+      <div class="test-section">
+        <h3>🛠️ Troubleshooting Tools</h3>
+        <div class="links">
+          <a href="wallet-connection-fix.html" class="link-btn">
+            🔧 Full Diagnostic Tool
+          </a>
+          <a href="freighter-connection-guide.html" class="link-btn">
+            📋 Step-by-Step Guide
+          </a>
+          <a href="freighter-simple-test.html" class="link-btn">
+            🧪 Simple Connection Test
+          </a>
+          <a href="http://localhost:5173" class="link-btn">
+            🎯 Main Application
+          </a>
+        </div>
+      </div>
+
+      <div class="test-section">
+        <h3>📖 Quick Setup Instructions</h3>
+        <ol style="padding-left: 1.5rem; line-height: 1.6">
+          <li>
+            <strong>Install Wallet:</strong>
+            <a
+              href="https://chrome.google.com/webstore/detail/freighter/bcacfldlkkdogcmkkibnjlakofdplcbk"
+              target="_blank"
+              style="color: #d4af37"
+            >
+              Get Freighter Extension
+            </a>
+          </li>
+          <li>
+            <strong>Create Account:</strong> Open Freighter and create or import
+            a Stellar account
+          </li>
+          <li>
+            <strong>Test Connection:</strong> Click "Test Connection" above
+          </li>
+          <li>
+            <strong>Use App:</strong> Go to the main application once connected
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <script>
+      let walletConnected = false;
+
+      async function quickTest() {
+        const testBtn = document.getElementById("testBtn");
+        const resultDiv = document.getElementById("testResult");
+        const walletInfoDiv = document.getElementById("walletInfo");
+        const walletDetailsDiv = document.getElementById("walletDetails");
+
+        testBtn.disabled = true;
+        testBtn.textContent = "🔄 Testing...";
+        resultDiv.innerHTML = "🔄 Running connection test...";
+        resultDiv.className = "status info";
+
+        try {
+          // Step 1: Check if wallet is installed
+          if (!window.freighter) {
+            throw new Error(
+              "Wallet extension not found. Please install Freighter wallet."
+            );
+          }
+
+          resultDiv.innerHTML =
+            "✅ Wallet extension detected\n🔄 Checking connection...";
+
+          // Step 2: Check if already connected
+          const isAllowed = await window.freighter.isAllowed();
+
+          if (!isAllowed) {
+            // Step 3: Request connection
+            resultDiv.innerHTML =
+              "✅ Wallet extension detected\n🔄 Requesting connection...";
+            await window.freighter.requestAccess();
+
+            // Wait a moment
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
+            // Check again
+            const newIsAllowed = await window.freighter.isAllowed();
+            if (!newIsAllowed) {
+              throw new Error(
+                "Connection was rejected. Please approve the connection request."
+              );
+            }
+          }
+
+          // Step 4: Get wallet information
+          resultDiv.innerHTML =
+            "✅ Wallet extension detected\n✅ Connection granted\n🔄 Getting wallet info...";
+
+          const publicKey = await window.freighter.getPublicKey();
+          const network = await window.freighter.getNetwork();
+
+          if (!publicKey) {
+            throw new Error(
+              "No account found in wallet. Please create or import an account."
+            );
+          }
+
+          // Success!
+          walletConnected = true;
+          resultDiv.innerHTML =
+            "✅ Wallet extension detected\n✅ Connection successful\n✅ Account found\n🎉 All tests passed!";
+          resultDiv.className = "status success";
+
+          testBtn.textContent = "✅ Connection Working";
+          testBtn.style.background =
+            "linear-gradient(135deg, #10b981, #059669)";
+
+          // Show wallet info
+          walletDetailsDiv.innerHTML = `
+                    <h4>🚀 Connected Wallet Information</h4>
+                    <p><strong>Public Key:</strong> ${publicKey}</p>
+                    <p><strong>Short Address:</strong> ${publicKey.slice(
+                      0,
+                      6
+                    )}...${publicKey.slice(-4)}</p>
+                    <p><strong>Network:</strong> ${network}</p>
+                    <p><strong>Status:</strong> ✅ Connected and Ready</p>
+                `;
+          walletInfoDiv.style.display = "block";
+        } catch (error) {
+          console.error("Connection test failed:", error);
+
+          let errorMessage = "❌ Connection test failed:\n";
+
+          if (error.message.includes("not found")) {
+            errorMessage += "• Wallet extension not installed\n";
+            errorMessage += "• Please install Freighter wallet first";
+          } else if (error.message.includes("rejected")) {
+            errorMessage += "• Connection was cancelled\n";
+            errorMessage += "• Please approve the connection request";
+          } else if (error.message.includes("No account")) {
+            errorMessage += "• No account found in wallet\n";
+            errorMessage += "• Please create or import an account";
+          } else {
+            errorMessage += `• ${error.message}`;
+          }
+
+          resultDiv.innerHTML = errorMessage;
+          resultDiv.className = "status error";
+
+          testBtn.disabled = false;
+          testBtn.textContent = "🚀 Test Connection";
+        }
+      }
+
+      // Auto-test on page load
+      window.addEventListener("load", () => {
+        setTimeout(quickTest, 1000);
+      });
+    </script>
+  </body>
+</html>

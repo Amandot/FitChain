@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stellar Strider Database Viewer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: #0a1929;
+        color: white;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .section {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .tab {
+        padding: 10px 20px;
+        background: #d4af37;
+        color: #0a1929;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .tab.active {
+        background: #ffd700;
+      }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      .data-table th,
+      .data-table td {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 10px;
+        text-align: left;
+      }
+      .data-table th {
+        background: rgba(212, 175, 55, 0.3);
+      }
+      .loading {
+        text-align: center;
+        padding: 40px;
+        font-size: 18px;
+      }
+      .error {
+        color: #ff6b6b;
+        padding: 20px;
+        background: rgba(255, 107, 107, 0.1);
+        border-radius: 5px;
+      }
+      .status-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+      .status-completed {
+        background: #10b981;
+        color: white;
+      }
+      .status-pending {
+        background: #f59e0b;
+        color: white;
+      }
+      .status-active {
+        background: #3b82f6;
+        color: white;
+      }
+      .status-upcoming {
+        background: #6b7280;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🗄️ Stellar Strider Database Viewer</h1>
+      <p>Real-time view of your SQLite database data</p>
+
+      <div class="tabs">
+        <button class="tab active" onclick="showSection('users')">
+          👥 Users
+        </button>
+        <button class="tab" onclick="showSection('contests')">
+          🏆 Contests
+        </button>
+        <button class="tab" onclick="showSection('prizes')">
+          💰 Prize Distributions
+        </button>
+        <button class="tab" onclick="showSection('payments')">
+          💳 Payment History
+        </button>
+        <button class="tab" onclick="showSection('leaderboard')">
+          📊 Leaderboard
+        </button>
+      </div>
+
+      <div id="users" class="section">
+        <h2>👥 Users Database</h2>
+        <div id="users-content" class="loading">Loading users...</div>
+      </div>
+
+      <div id="contests" class="section" style="display: none">
+        <h2>🏆 Contests Database</h2>
+        <div id="contests-content" class="loading">Loading contests...</div>
+      </div>
+
+      <div id="prizes" class="section" style="display: none">
+        <h2>💰 Prize Distributions Database</h2>
+        <div id="prizes-content" class="loading">Loading prizes...</div>
+      </div>
+
+      <div id="payments" class="section" style="display: none">
+        <h2>💳 Payment History Database</h2>
+        <div id="payments-content" class="loading">Loading payments...</div>
+      </div>
+
+      <div id="leaderboard" class="section" style="display: none">
+        <h2>📊 Global Leaderboard</h2>
+        <div id="leaderboard-content" class="loading">
+          Loading leaderboard...
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:3001/api";
+
+      function showSection(sectionName) {
+        // Hide all sections
+        document.querySelectorAll(".section").forEach((section) => {
+          section.style.display = "none";
+        });
+
+        // Remove active class from all tabs
+        document.querySelectorAll(".tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+
+        // Show selected section
+        document.getElementById(sectionName).style.display = "block";
+        event.target.classList.add("active");
+
+        // Load data for the section
+        loadData(sectionName);
+      }
+
+      async function loadData(section) {
+        const contentDiv = document.getElementById(`${section}-content`);
+        contentDiv.innerHTML = '<div class="loading">Loading...</div>';
+
+        try {
+          let url;
+          switch (section) {
+            case "users":
+              url = `${API_BASE}/leaderboard/global`;
+              break;
+            case "contests":
+              url = `${API_BASE}/contests`;
+              break;
+            case "prizes":
+              url = `${API_BASE}/payments/prizes/all`;
+              break;
+            case "payments":
+              url = `${API_BASE}/payments/recent/all`;
+              break;
+            case "leaderboard":
+              url = `${API_BASE}/leaderboard/global`;
+              break;
+          }
+
+          const response = await fetch(url);
+          const data = await response.json();
+
+          if (data.success) {
+            displayData(section, data.data);
+          } else {
+            contentDiv.innerHTML = `<div class="error">Error: ${data.message}</div>`;
+          }
+        } catch (error) {
+          contentDiv.innerHTML = `<div class="error">Connection Error: ${error.message}<br><br>Make sure the backend server is running at http://localhost:3001</div>`;
+        }
+      }
+
+      function displayData(section, data) {
+        const contentDiv = document.getElementById(`${section}-content`);
+
+        if (!data || data.length === 0) {
+          contentDiv.innerHTML = "<p>No data found in database.</p>";
+          return;
+        }
+
+        let html = '<table class="data-table"><thead><tr>';
+
+        // Create table headers based on data structure
+        const headers = Object.keys(data[0]);
+        headers.forEach((header) => {
+          html += `<th>${header.replace(/_/g, " ").toUpperCase()}</th>`;
+        });
+        html += "</tr></thead><tbody>";
+
+        // Create table rows
+        data.forEach((row) => {
+          html += "<tr>";
+          headers.forEach((header) => {
+            let value = row[header];
+
+            // Format specific fields
+            if (header.includes("date") || header.includes("at")) {
+              value = value ? new Date(value).toLocaleString() : "N/A";
+            } else if (header === "status") {
+              value = `<span class="status-badge status-${value}">${value}</span>`;
+            } else if (header.includes("wallet") && value) {
+              value = `${value.slice(0, 6)}...${value.slice(-4)}`;
+            } else if (typeof value === "number" && header.includes("amount")) {
+              value = `${value.toFixed(2)} XLM`;
+            } else if (
+              typeof value === "number" &&
+              header.includes("distance")
+            ) {
+              value = `${value.toFixed(1)} km`;
+            }
+
+            html += `<td>${value || "N/A"}</td>`;
+          });
+          html += "</tr>";
+        });
+
+        html += "</tbody></table>";
+        contentDiv.innerHTML = html;
+      }
+
+      // Load initial data
+      loadData("users");
+
+      // Auto-refresh every 30 seconds
+      setInterval(() => {
+        const activeTab = document.querySelector(".tab.active");
+        if (activeTab) {
+          const section = activeTab.textContent.toLowerCase().split(" ")[1];
+          loadData(section);
+        }
+      }, 30000);
+    </script>
+  </body>
+</html>

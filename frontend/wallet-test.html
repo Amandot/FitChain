@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stellar Wallet API Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #1a1a1a;
+        color: white;
+      }
+      .test-section {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 10px;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+      }
+      button {
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        color: #1a1a1a;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        margin: 10px 5px;
+      }
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+      }
+      .result {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 15px;
+        border-radius: 5px;
+        margin: 10px 0;
+        font-family: monospace;
+        white-space: pre-wrap;
+      }
+      .success {
+        border-left: 4px solid #10b981;
+      }
+      .error {
+        border-left: 4px solid #ef4444;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🚀 Stellar Wallet API Test</h1>
+
+    <div class="test-section">
+      <h3>📦 Freighter API Integration Test</h3>
+      <p>Testing the new @stellar/freighter-api implementation</p>
+
+      <button onclick="testWalletInstalled()">Check Wallet Installation</button>
+      <button onclick="testConnectWallet()">Connect Wallet</button>
+      <button onclick="testGetPublicKey()">Get Public Key</button>
+
+      <div id="results" class="result"></div>
+    </div>
+
+    <script type="module">
+      // Import the new wallet functions
+      import {
+        connectWallet,
+        isWalletInstalled,
+        getPublicKey,
+      } from "./src/utils/stellarWallet.js";
+
+      // Make functions available globally for button clicks
+      window.testWalletInstalled = async function () {
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = "🔍 Checking wallet installation...\n";
+
+        try {
+          const isInstalled = await isWalletInstalled();
+          resultsDiv.innerHTML += `✅ Wallet installed: ${isInstalled}\n`;
+          resultsDiv.className = "result success";
+        } catch (error) {
+          resultsDiv.innerHTML += `❌ Error: ${error.message}\n`;
+          resultsDiv.className = "result error";
+        }
+      };
+
+      window.testConnectWallet = async function () {
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = "🔄 Connecting wallet...\n";
+
+        try {
+          const publicKey = await connectWallet();
+          if (publicKey) {
+            resultsDiv.innerHTML += `✅ Connected successfully!\n`;
+            resultsDiv.innerHTML += `📋 Public Key: ${publicKey}\n`;
+            resultsDiv.innerHTML += `🎯 Formatted: ${publicKey.slice(
+              0,
+              6
+            )}...${publicKey.slice(-4)}\n`;
+            resultsDiv.className = "result success";
+          } else {
+            resultsDiv.innerHTML += `❌ Connection failed - no public key returned\n`;
+            resultsDiv.className = "result error";
+          }
+        } catch (error) {
+          resultsDiv.innerHTML += `❌ Error: ${error.message}\n`;
+          resultsDiv.className = "result error";
+        }
+      };
+
+      window.testGetPublicKey = async function () {
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = "📋 Getting public key...\n";
+
+        try {
+          const publicKey = await getPublicKey();
+          if (publicKey) {
+            resultsDiv.innerHTML += `✅ Public Key retrieved!\n`;
+            resultsDiv.innerHTML += `📋 Key: ${publicKey}\n`;
+            resultsDiv.className = "result success";
+          } else {
+            resultsDiv.innerHTML += `⚠️ No public key available (not connected?)\n`;
+            resultsDiv.className = "result error";
+          }
+        } catch (error) {
+          resultsDiv.innerHTML += `❌ Error: ${error.message}\n`;
+          resultsDiv.className = "result error";
+        }
+      };
+
+      // Auto-test on load
+      window.addEventListener("load", () => {
+        console.log("🚀 Wallet API test page loaded");
+        testWalletInstalled();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💼 Wallet Payment Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0a1929, #1e3a8a);
+        color: white;
+        margin: 0;
+        padding: 2rem;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+      }
+      h1 {
+        text-align: center;
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2rem;
+      }
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+      }
+      .feature-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+      }
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+      .feature-title {
+        color: #d4af37;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+      }
+      .feature-description {
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.6;
+      }
+      .btn {
+        background: linear-gradient(135deg, #d4af37, #ffd700);
+        border: none;
+        color: #0a1929;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin: 0.5rem;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+      }
+      .btn.secondary {
+        background: rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: #3b82f6;
+      }
+      .links-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 2rem;
+        margin: 2rem 0;
+        text-align: center;
+      }
+      .links-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+      .code-example {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        border-left: 4px solid #d4af37;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>💼 Wallet Payment System</h1>
+
+      <p
+        style="
+          text-align: center;
+          font-size: 1.1rem;
+          color: rgba(255, 255, 255, 0.8);
+          margin-bottom: 2rem;
+        "
+      >
+        Complete wallet integration with payment functionality for your Stellar
+        fitness app
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">💰</div>
+          <div class="feature-title">Multi-Currency Wallet</div>
+          <div class="feature-description">
+            Support for XLM, USDC, BTC and other Stellar assets with real-time
+            balance tracking and USD conversion
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">💸</div>
+          <div class="feature-title">Send Payments</div>
+          <div class="feature-description">
+            Send payments to any Stellar address with custom amounts,
+            descriptions, and real-time transaction tracking
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <div class="feature-title">Payment History</div>
+          <div class="feature-description">
+            Complete transaction history with status tracking, timestamps, and
+            transaction hash verification
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔔</div>
+          <div class="feature-title">Real-time Notifications</div>
+          <div class="feature-description">
+            Instant notifications for successful payments, errors, and wallet
+            connection status updates
+          </div>
+        </div>
+      </div>
+
+      <div class="links-section">
+        <h3 style="color: #d4af37; margin-bottom: 1rem">
+          🚀 Test the Wallet System
+        </h3>
+        <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 1.5rem">
+          Try the wallet functionality in different environments
+        </p>
+
+        <div class="links-grid">
+          <a href="http://localhost:5173" class="btn"> 🎯 Main App </a>
+          <a href="connection-test-page.html" class="btn secondary">
+            🔧 Connection Test
+          </a>
+          <a href="wallet-connection-fix.html" class="btn secondary">
+            🛠️ Diagnostic Tool
+          </a>
+          <a href="freighter-connection-guide.html" class="btn secondary">
+            📋 Setup Guide
+          </a>
+        </div>
+      </div>
+
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 12px;
+          padding: 2rem;
+          margin: 2rem 0;
+        "
+      >
+        <h3 style="color: #d4af37; margin-bottom: 1rem">📁 Files Created</h3>
+        <div class="code-example">
+          frontend/src/components/ ├── Wallet.tsx # Main wallet component ├──
+          Wallet.css # Wallet styling ├── WalletIntegration.tsx # Wallet
+          integration with notifications ├── WalletIntegration.css # Integration
+          styling └── SimpleWalletConnect.jsx # Simplified connection component
+          frontend/src/services/ └── walletPayment.ts # Payment service logic
+        </div>
+      </div>
+
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 12px;
+          padding: 2rem;
+          margin: 2rem 0;
+        "
+      >
+        <h3 style="color: #d4af37; margin-bottom: 1rem">🎯 Key Features</h3>
+        <ul
+          style="
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
+            padding-left: 1.5rem;
+          "
+        >
+          <li>
+            <strong>Wallet Connection:</strong> Seamless Freighter wallet
+            integration
+          </li>
+          <li>
+            <strong>Balance Display:</strong> Multi-currency balance with USD
+            conversion
+          </li>
+          <li>
+            <strong>Send Payments:</strong> Send XLM, USDC, BTC to any Stellar
+            address
+          </li>
+          <li>
+            <strong>Payment History:</strong> Complete transaction tracking
+          </li>
+          <li>
+            <strong>Real-time Updates:</strong> Live balance and payment status
+            updates
+          </li>
+          <li>
+            <strong>Notifications:</strong> Toast notifications for all wallet
+            actions
+          </li>
+          <li>
+            <strong>Error Handling:</strong> Comprehensive error handling and
+            user feedback
+          </li>
+          <li>
+            <strong>Mobile Responsive:</strong> Works perfectly on all devices
+          </li>
+        </ul>
+      </div>
+
+      <div
+        style="
+          background: rgba(16, 185, 129, 0.1);
+          border: 1px solid rgba(16, 185, 129, 0.3);
+          border-radius: 12px;
+          padding: 2rem;
+          margin: 2rem 0;
+          text-align: center;
+        "
+      >
+        <h3 style="color: #10b981; margin-bottom: 1rem">✅ Ready to Use!</h3>
+        <p style="color: rgba(255, 255, 255, 0.9); margin-bottom: 1.5rem">
+          The wallet system is fully integrated and ready for testing. Navigate
+          to the main app and click "Wallet" in the navigation menu.
+        </p>
+        <a
+          href="http://localhost:5173"
+          class="btn"
+          style="font-size: 1.1rem; padding: 1.25rem 2.5rem"
+        >
+          🚀 Launch Main App
+        </a>
+      </div>
+
+      <div
+        style="
+          text-align: center;
+          margin-top: 2rem;
+          color: rgba(255, 255, 255, 0.6);
+        "
+      >
+        <p>
+          💼 Wallet system with payment functionality - Ready for production use
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
