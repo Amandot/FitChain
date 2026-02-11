@@ -444,6 +444,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for the decentralized fitness community**
 
 🌍 **Transform Your Fitness Journey with Blockchain** 🚀
