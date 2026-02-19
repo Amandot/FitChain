@@ -1,4 +1,4 @@
-# 🏃‍♂️ Stellar Strider
+# 🏃‍♂️ Fitchain
 
 **Decentralized Fitness Tracking Platform on Stellar Blockchain**
 
