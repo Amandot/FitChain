@@ -101,9 +101,22 @@ CREATE TABLE IF NOT EXISTS nft_rewards (
     FOREIGN KEY (contest_id) REFERENCES contests(id)
 );
 
+-- Run history table
+CREATE TABLE IF NOT EXISTS run_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    wallet_address TEXT NOT NULL,
+    date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    distance_meters REAL NOT NULL,
+    duration_seconds INTEGER NOT NULL,
+    avg_speed REAL,
+    notes TEXT,
+    FOREIGN KEY (wallet_address) REFERENCES users(wallet_address)
+);
+
 -- Indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_users_wallet ON users(wallet_address);
 CREATE INDEX IF NOT EXISTS idx_contests_status ON contests(status);
 CREATE INDEX IF NOT EXISTS idx_contest_participants_contest ON contest_participants(contest_id);
 CREATE INDEX IF NOT EXISTS idx_prize_distributions_contest ON prize_distributions(contest_id);
 CREATE INDEX IF NOT EXISTS idx_payment_history_to_wallet ON payment_history(to_wallet);
+CREATE INDEX IF NOT EXISTS idx_run_history_wallet ON run_history(wallet_address);

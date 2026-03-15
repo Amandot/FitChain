@@ -1,91 +1,78 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import './LoadingScreen.css';
 
-const LoadingScreen = ({ isVisible }) => {
-  if (!isVisible) return null;
+const snowDots = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  left: `${Math.random() * 100}%`,
+  delay: `${Math.random() * 3}s`,
+  duration: `${2 + Math.random() * 3}s`,
+  size: `${2 + Math.random() * 3}px`,
+}));
 
+const LoadingScreen = ({ isVisible }) => {
   return (
-    <motion.div
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      className="loading-screen"
-    >
-      <div className="loading-content">
-        {/* Road Animation */}
-        <div className="road-container">
-          <div className="road">
-            <div className="road-lines">
-              <div className="road-line"></div>
-              <div className="road-line"></div>
-              <div className="road-line"></div>
-              <div className="road-line"></div>
-              <div className="road-line"></div>
-            </div>
-          </div>
-          
-          {/* Walking Man Animation */}
-          <motion.div
-            animate={{
-              x: [-120, 120],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            className="walking-man"
-          >
-            <motion.div
-              animate={{
-                rotateY: [0, 5, -5, 0],
-                scale: [1, 1.05, 1, 1.05, 1]
-              }}
-              transition={{
-                rotateY: { duration: 0.8, repeat: Infinity, ease: "easeInOut" },
-                scale: { duration: 0.4, repeat: Infinity, ease: "easeInOut" }
-              }}
-              className="man-icon"
-            >
-              🚶‍♂️
-            </motion.div>
-          </motion.div>
-          
-          {/* Road Side Elements */}
-          <div className="road-side-elements">
-            <div className="tree left">🌳</div>
-            <div className="tree right">🌳</div>
-          </div>
-        </div>
-        
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="loading-title"
-        >
-          FitChain
-        </motion.h2>
-        
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="loading-subtitle"
-        >
-          Starting your fitness journey...
-        </motion.p>
-        
+    <AnimatePresence>
+      {isVisible && (
         <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: "100%" }}
-          transition={{ duration: 2.5, ease: "easeInOut" }}
-          className="loading-bar"
+          className="loading-screen"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          <div className="loading-progress"></div>
+          {/* Snow dots */}
+          <div className="loading-snow">
+            {snowDots.map(d => (
+              <div
+                key={d.id}
+                className="snow-dot"
+                style={{
+                  left: d.left,
+                  top: '-10px',
+                  width: d.size,
+                  height: d.size,
+                  animationDelay: d.delay,
+                  animationDuration: d.duration,
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="loading-content">
+            {/* Logo */}
+            <div className="loading-logo">
+              <span className="loading-logo-icon">🏃</span>
+              <span className="loading-logo-text">FitChain</span>
+            </div>
+
+            {/* Road animation
+            <div className="road-container">
+              <div className="road">
+                <div className="road-lines">
+                  {[...Array(5)].map((_, i) => <div key={i} className="road-line" />)}
+                </div>
+              </div>
+              <motion.div
+                className="walking-man"
+                animate={{ x: [-110, 110] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}
+              >
+                <div className="man-icon">🚶‍♂️</div>
+              </motion.div>
+            </div> */}
+
+            {/* Progress */}
+            <div className="loading-progress">
+              <div className="progress-track">
+                <div className="progress-fill" />
+              </div>
+              <span className="progress-text">Initializing blockchain connection...</span>
+            </div>
+
+            <p className="loading-subtitle">Decentralized Fitness Tracking</p>
+          </div>
         </motion.div>
-      </div>
-    </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

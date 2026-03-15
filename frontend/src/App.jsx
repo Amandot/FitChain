@@ -14,7 +14,10 @@ import WalletIntegration from './components/WalletIntegration';
 import GlobalNavigation from './components/GlobalNavigation';
 import NavigationDemo from './components/NavigationDemo';
 import FreighterStatus from './components/FreighterStatus';
+import MetaMaskConnect from './components/MetaMaskConnect';
+import ProfilePage from './components/ProfilePage';
 import stellarWallet from './utils/stellarWallet';
+import { isInMumbai, MUMBAI_CENTER } from './utils/mumbaiGeofence';
 import './App.css';
 
 // Global Wallet Context for persistent connection across pages
@@ -48,10 +51,13 @@ function App() {
   const [stellarNetwork, setStellarNetwork] = useState(null);
   const [walletConnectionPersisted, setWalletConnectionPersisted] = useState(false);
 
+  // MetaMask wallet state
+  const [metaMaskInfo, setMetaMaskInfo] = useState(null);
+
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [path, setPath] = useState([]);
-  const [currentPosition, setCurrentPosition] = useState(null);
+  const [currentPosition, setCurrentPosition] = useState(MUMBAI_CENTER);
   const [distance, setDistance] = useState(0);
   const [message, setMessage] = useState('');
   const [speed, setSpeed] = useState(0);
@@ -69,6 +75,8 @@ function App() {
   const [trackingDuration, setTrackingDuration] = useState(0);
 
   const watchIdRef = useRef(null);
+  const lastValidPositionRef = useRef(null);
+  const lastUpdateTimeRef = useRef(null);
 
   // Calculate distance between two coordinates (Haversine formula)
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -111,6 +119,20 @@ function App() {
     localStorage.removeItem('stellarWalletConnected');
     
     setMessage('🔌 Stellar wallet disconnected');
+  };
+
+  // MetaMask handlers
+  const handleMetaMaskConnect = (info) => {
+    setMetaMaskInfo(info);
+    if (!walletAddress) setWalletAddress(info.address);
+    localStorage.setItem('metaMaskInfo', JSON.stringify(info));
+    setMessage(`🦊 MetaMask Connected: ${info.address.slice(0, 6)}...${info.address.slice(-4)}`);
+  };
+
+  const handleMetaMaskDisconnect = () => {
+    setMetaMaskInfo(null);
+    localStorage.removeItem('metaMaskInfo');
+    setMessage('🔌 MetaMask disconnected');
   };
 
 
@@ -161,54 +183,24 @@ function App() {
   }, []);
 
   // Check for existing Stellar wallet connection on app load - enhanced persistence
+  // Restore MetaMask connection on app load
   useEffect(() => {
-    const checkExistingConnection = async () => {
+    const restoreMetaMask = async () => {
       try {
-        // First check localStorage for persisted connection
-        const storedWalletInfo = localStorage.getItem('stellarWalletInfo');
-        const isConnected = localStorage.getItem('stellarWalletConnected') === 'true';
-        
-        if (storedWalletInfo && isConnected) {
-          const walletInfo = JSON.parse(storedWalletInfo);
-          
-          // Verify the connection is still valid with Freighter
-          if (window.freighter && await window.freighter.isAllowed()) {
-            try {
-              const currentPublicKey = await window.freighter.getPublicKey();
-              if (currentPublicKey === walletInfo.publicKey) {
-                setStellarWalletInfo(walletInfo);
-                setWalletAddress(walletInfo.publicKey);
-                setStellarNetwork(getStellarNetworkConfig());
-                setWalletConnectionPersisted(true);
-                setMessage(`🔄 Restored Stellar wallet connection: ${walletInfo.publicKey.slice(0, 6)}...${walletInfo.publicKey.slice(-4)}`);
-                return;
-              }
-            } catch (error) {
-              console.log('Stored connection no longer valid');
-            }
-          }
+        const { getMetaMaskAccount, getMetaMaskChainId, getNetworkName } = await import('./utils/metamaskWallet');
+        const acc = await getMetaMaskAccount();
+        if (acc) {
+          const chain = await getMetaMaskChainId();
+          const networkName = getNetworkName(chain);
+          const info = { address: acc, chainId: chain, networkName, walletType: 'metamask' };
+          setMetaMaskInfo(info);
+          setWalletAddress(acc);
         }
-        
-        // Fallback to stellarWallet utility if available
-        if (stellarWallet && stellarWallet.getConnectionStatus) {
-          const status = stellarWallet.getConnectionStatus();
-          if (status.isConnected) {
-            setStellarWalletInfo(status);
-            setWalletAddress(status.publicKey);
-            setStellarNetwork(getStellarNetworkConfig());
-            setWalletConnectionPersisted(true);
-            setMessage(`🔄 Restored Stellar wallet connection: ${status.publicKey.slice(0, 6)}...${status.publicKey.slice(-4)}`);
-          }
-        }
-      } catch (error) {
-        console.log('No existing wallet connection found:', error);
-        // Clear invalid stored data
-        localStorage.removeItem('stellarWalletInfo');
-        localStorage.removeItem('stellarWalletConnected');
+      } catch (e) {
+        console.log('MetaMask restore skipped:', e.message);
       }
     };
-
-    checkExistingConnection();
+    restoreMetaMask();
   }, []);
 
   // Start tracking with enhanced GPS monitoring
@@ -229,6 +221,10 @@ function App() {
     setLastUpdateTime(null);
     setMessage('🛰️ GPS tracking started... Getting your location...');
 
+    // Reset refs for fresh tracking session
+    lastValidPositionRef.current = null;
+    lastUpdateTimeRef.current = null;
+
     // Enhanced GPS options for real-time tracking (like Google Maps)
     const options = {
       enableHighAccuracy: true,
@@ -240,6 +236,13 @@ function App() {
       (position) => {
         const { latitude, longitude, accuracy, altitude, speed, heading } = position.coords;
         const newPos = [latitude, longitude];
+        const currentTime = Date.now();
+
+        // Mumbai geo-fence check
+        if (!isInMumbai(latitude, longitude)) {
+          setMessage('📍 Tracking is restricted to Mumbai only. Please run within Mumbai city limits.');
+          return;
+        }
 
         // Always update current position for map centering
         setCurrentPosition(newPos);
@@ -251,7 +254,7 @@ function App() {
         setPath((prevPath) => [...prevPath, newPos]);
         
         // Update tracking duration
-        const currentTrackingDuration = startTime ? (Date.now() - startTime) / 1000 : 0;
+        const currentTrackingDuration = startTime ? (currentTime - startTime) / 1000 : 0;
         setTrackingDuration(currentTrackingDuration);
 
         // Enhanced movement detection for status and distance calculation
@@ -259,81 +262,72 @@ function App() {
         let movementDetected = false;
         let distanceFromLast = 0;
 
-        // Check if we have a previous position
-        if (lastValidPosition) {
-          distanceFromLast = calculateDistance(
-            lastValidPosition[0],
-            lastValidPosition[1],
-            latitude,
-            longitude
-          );
+        // Use ref for last valid position to avoid stale closure
+        const prevPos = lastValidPositionRef.current;
 
-          // Much more sensitive movement detection for walking
-          const baseThreshold = Math.min(accuracy * 0.3, 2); // 30% of accuracy or max 2m
-          const maxReasonableDistance = 100; // Maximum reasonable distance between GPS points
-          const minWalkingSpeed = 0.2; // 0.2 m/s = 0.72 km/h (very slow walking)
+        if (prevPos) {
+          distanceFromLast = calculateDistance(prevPos[0], prevPos[1], latitude, longitude);
+
+          const baseThreshold = Math.min(accuracy * 0.3, 2);
+          const maxReasonableDistance = 100;
+          const minWalkingSpeed = 0.2;
           
-          // Movement detection criteria (more lenient):
           const speedBasedMovement = actualSpeed > minWalkingSpeed;
           const distanceBasedMovement = distanceFromLast > baseThreshold;
-          const accuracyIsReasonable = accuracy < 50; // More lenient accuracy requirement
-          
-          // Detect movement if:
-          // 1. GPS reports any reasonable speed OR
-          // 2. Distance moved is above threshold AND accuracy is reasonable OR  
-          // 3. Any movement detected with good accuracy (< 20m) OR
-          // 4. After 10 seconds of tracking, be more aggressive (assume user is walking)
+          const accuracyIsReasonable = accuracy < 50;
           const aggressiveMode = currentTrackingDuration > 10;
+
           movementDetected = speedBasedMovement || 
                            (distanceBasedMovement && accuracyIsReasonable) ||
                            (distanceFromLast > 1 && accuracy < 20) ||
                            (aggressiveMode && distanceFromLast > 0.3 && accuracy < 30);
 
-          // Add distance for any reasonable movement
           if (distanceFromLast > 0.5 && distanceFromLast < maxReasonableDistance) {
-            // Always add distance if we moved more than 0.5m and it's reasonable
             if (movementDetected || accuracy < 15) {
               setDistance((prevDist) => prevDist + distanceFromLast);
+              lastValidPositionRef.current = newPos;
               setLastValidPosition(newPos);
             }
           } else if (distanceFromLast > 0.2 && distanceFromLast < 5 && accuracy < 10) {
-            // For very small movements with excellent accuracy, still count them
             setDistance((prevDist) => prevDist + distanceFromLast);
+            lastValidPositionRef.current = newPos;
             setLastValidPosition(newPos);
             movementDetected = true;
           }
 
           setIsMoving(movementDetected);
         } else {
-          // First position - set as reference point
+          // First position - set as reference point using ref immediately
+          lastValidPositionRef.current = newPos;
           setLastValidPosition(newPos);
           setIsMoving(false);
-          setLastUpdateTime(currentTime);
         }
 
-        // Update speed (use calculated speed if GPS speed is unreliable)
+        // Update speed
         let displaySpeed = actualSpeed;
-        const currentTime = Date.now();
+        const prevTime = lastUpdateTimeRef.current;
         
-        // If GPS speed is not available or seems unreliable, calculate from distance and time
-        if ((!actualSpeed || actualSpeed < 0.1) && lastValidPosition && distanceFromLast > 0 && lastUpdateTime) {
-          const timeInterval = (currentTime - lastUpdateTime) / 1000; // Time in seconds
-          if (timeInterval > 0 && timeInterval < 10) { // Only use if reasonable time interval
+        if ((!actualSpeed || actualSpeed < 0.1) && prevPos && distanceFromLast > 0 && prevTime) {
+          const timeInterval = (currentTime - prevTime) / 1000;
+          if (timeInterval > 0 && timeInterval < 10) {
             displaySpeed = distanceFromLast / timeInterval;
           }
         }
         
         setSpeed(displaySpeed);
+        lastUpdateTimeRef.current = currentTime;
         setLastUpdateTime(currentTime);
 
-        // Update status message with movement detection
         const accuracyText = accuracy < 10 ? '🟢 Excellent' : accuracy < 20 ? '🟡 Good' : accuracy < 50 ? '🟠 Fair' : '🔴 Poor';
         const movementStatus = movementDetected ? '🏃‍♂️ Moving' : '⏸️ Stationary';
         const speedKmh = (displaySpeed * 3.6).toFixed(1);
-        const distanceKm = (distance / 1000).toFixed(3);
         const aggressiveMode = currentTrackingDuration > 10;
 
-        setMessage(`📍 ${movementStatus} | ${accuracyText} GPS (±${accuracy.toFixed(0)}m) | Speed: ${speedKmh} km/h | Distance: ${distanceKm}km | ${aggressiveMode ? '🔥 Enhanced' : '🔄 Standard'} | Points: ${path.length}`);
+        setDistance(prev => {
+          const distKm = (prev / 1000).toFixed(3);
+          setMessage(`📍 ${movementStatus} | ${accuracyText} GPS (±${accuracy.toFixed(0)}m) | Speed: ${speedKmh} km/h | Distance: ${distKm}km | ${aggressiveMode ? '🔥 Enhanced' : '🔄 Standard'}`);
+          return prev;
+        });
       },
       (error) => {
         let errorMsg = '❌ GPS Error: ';
@@ -373,6 +367,20 @@ function App() {
         setMessage(`Invalid loop! Start and end are ${loopDistance.toFixed(0)}m apart (must be < 50m)`);
       } else {
         setMessage(`Valid loop! Time: ${elapsedTime}s, Distance: ${distance.toFixed(0)}m`);
+        // Auto-save run to backend if wallet is connected
+        const addr = metaMaskInfo?.address || walletAddress;
+        if (addr && distance > 0 && elapsedTime > 0) {
+          const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+          fetch(`${API_BASE}/api/profile/${addr}/runs`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              distance_meters: distance,
+              duration_seconds: elapsedTime,
+              avg_speed: distance > 0 && elapsedTime > 0 ? distance / elapsedTime : 0,
+            }),
+          }).catch(() => {});
+        }
       }
     }
   };
@@ -468,19 +476,26 @@ function App() {
     setCurrentPage('wallet');
   };
 
+  const handleShowProfile = () => {
+    setCurrentPage('profile');
+  };
+
   const handleBackToApp = () => {
     setCurrentPage('app');
   };
 
   // Wallet context value - shared across all pages
   const walletContextValue = {
-    walletAddress,
+    walletAddress: metaMaskInfo?.address || walletAddress,
     stellarWalletInfo,
     stellarNetwork,
     walletConnectionPersisted,
-    isConnected: !!stellarWalletInfo,
+    metaMaskInfo,
+    isConnected: !!metaMaskInfo,
     onConnect: handleStellarWalletConnect,
     onDisconnect: handleStellarWalletDisconnect,
+    onMetaMaskConnect: handleMetaMaskConnect,
+    onMetaMaskDisconnect: handleMetaMaskDisconnect,
     formatAddress: (address) => address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ''
   };
 
@@ -507,6 +522,7 @@ function App() {
               onShowContestLeaderboard={handleShowContestLeaderboard}
               onShowDemo={handleShowDemo}
               onShowWallet={handleShowWallet}
+              onShowProfile={handleShowProfile}
               walletInfo={walletContextValue}
             />
           </motion.div>
@@ -593,17 +609,37 @@ function App() {
             <GlobalNavigation
               currentPage="wallet"
               onNavigate={setCurrentPage}
-              title="💼 Wallet & Payments"
-              subtitle="Manage your Stellar wallet and payments"
+              title="💼 Wallet"
+              subtitle="Connect your MetaMask wallet"
             />
-            <WalletIntegration
-              onWalletConnect={handleStellarWalletConnect}
-              onWalletDisconnect={handleStellarWalletDisconnect}
-              onPaymentComplete={(result) => {
-                console.log('Payment completed:', result);
-                setMessage(`✅ Payment completed: ${result.transactionHash}`);
-              }}
+            <div className="wallet-page-container">
+              <div className="wallet-section glass">
+                <h3 className="wallet-section-title">🦊 MetaMask</h3>
+                <MetaMaskConnect
+                  onConnect={handleMetaMaskConnect}
+                  onDisconnect={handleMetaMaskDisconnect}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {currentPage === 'profile' && (
+          <motion.div
+            key="profile"
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 100 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="app"
+          >
+            <GlobalNavigation
+              currentPage="profile"
+              onNavigate={setCurrentPage}
+              title="👤 My Profile"
+              subtitle="Your run history and contest results"
             />
+            <ProfilePage />
           </motion.div>
         )}
 

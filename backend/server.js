@@ -10,6 +10,7 @@ const db = require('./config/database');
 const leaderboardRoutes = require('./routes/leaderboard');
 const contestRoutes = require('./routes/contests');
 const paymentRoutes = require('./routes/payments');
+const profileRoutes = require('./routes/profile');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -56,6 +57,7 @@ app.get('/health', (req, res) => {
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/contests', contestRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/profile', profileRoutes);
 
 // API documentation endpoint
 app.get('/api', (req, res) => {

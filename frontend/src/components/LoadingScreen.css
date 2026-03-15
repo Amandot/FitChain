@@ -1,49 +1,111 @@
 .loading-screen {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--dark-bg);
+  inset: 0;
+  background: var(--bg-void);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  overflow: hidden;
+}
+
+/* Background orbs */
+.loading-screen::before,
+.loading-screen::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.loading-screen::before {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.12) 0%, transparent 70%);
+  top: -100px; left: -100px;
+  animation: loadOrb 6s ease-in-out infinite;
+}
+
+.loading-screen::after {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.08) 0%, transparent 70%);
+  bottom: -80px; right: -80px;
+  animation: loadOrb 8s ease-in-out infinite reverse;
+}
+
+@keyframes loadOrb {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, -30px); }
 }
 
 .loading-content {
   text-align: center;
-  max-width: 500px;
-  padding: 40px;
+  max-width: 420px;
+  padding: 40px 32px;
+  position: relative;
+  z-index: 1;
 }
 
-/* Road Animation Styles */
+/* Logo */
+.loading-logo {
+  margin-bottom: 40px;
+}
+
+.loading-logo-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 12px;
+  animation: logoBounce 2s ease-in-out infinite;
+}
+
+@keyframes logoBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.05); }
+}
+
+.loading-logo-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+}
+
+/* Road animation */
 .road-container {
   position: relative;
-  width: 300px;
-  height: 120px;
-  margin: 0 auto 40px auto;
+  width: 280px;
+  height: 100px;
+  margin: 0 auto 36px;
   overflow: hidden;
-  border-radius: 15px;
+  border-radius: var(--r-lg);
 }
 
 .road {
   width: 100%;
-  height: 80px;
-  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  height: 70px;
+  background: linear-gradient(180deg, #0d1e30 0%, #091525 100%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-md);
   position: relative;
-  border-radius: 10px;
-  box-shadow: 
-    inset 0 4px 8px rgba(0, 0, 0, 0.3),
-    0 2px 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.road::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.05) 50%, transparent 100%);
 }
 
 .road-lines {
   position: absolute;
   top: 50%;
-  left: 0;
-  right: 0;
-  height: 4px;
+  left: 0; right: 0;
+  height: 3px;
   transform: translateY(-50%);
   display: flex;
   justify-content: space-around;
@@ -51,161 +113,117 @@
 }
 
 .road-line {
-  width: 30px;
-  height: 4px;
-  background: #FFD700;
+  width: 28px;
+  height: 3px;
+  background: var(--accent-primary);
   border-radius: 2px;
-  animation: roadMove 1.5s linear infinite;
-  opacity: 0.8;
+  opacity: 0.6;
+  animation: roadMove 1.4s linear infinite;
 }
 
-.road-line:nth-child(2) { animation-delay: -0.3s; }
-.road-line:nth-child(3) { animation-delay: -0.6s; }
-.road-line:nth-child(4) { animation-delay: -0.9s; }
-.road-line:nth-child(5) { animation-delay: -1.2s; }
+.road-line:nth-child(2) { animation-delay: -0.28s; }
+.road-line:nth-child(3) { animation-delay: -0.56s; }
+.road-line:nth-child(4) { animation-delay: -0.84s; }
+.road-line:nth-child(5) { animation-delay: -1.12s; }
 
 @keyframes roadMove {
-  0% {
-    transform: translateX(-50px);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.8;
-  }
-  80% {
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateX(350px);
-    opacity: 0;
-  }
+  0%   { transform: translateX(-60px); opacity: 0; }
+  15%  { opacity: 0.6; }
+  85%  { opacity: 0.6; }
+  100% { transform: translateX(340px); opacity: 0; }
 }
 
 .walking-man {
   position: absolute;
-  top: 20px;
+  top: 14px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
 }
 
 .man-icon {
-  font-size: 3rem;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-  animation: walkBounce 0.6s ease-in-out infinite;
+  font-size: 2.6rem;
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+  animation: walkBounce 0.5s ease-in-out infinite;
 }
 
 @keyframes walkBounce {
-  0%, 100% {
-    transform: translateY(0px) scale(1);
-  }
-  50% {
-    transform: translateY(-5px) scale(1.05);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
 }
 
-/* Road Side Elements */
-.road-side-elements {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
+/* Progress bar */
+.loading-progress {
+  margin-bottom: 24px;
 }
 
-.tree {
-  position: absolute;
-  font-size: 1.5rem;
-  opacity: 0.6;
-  animation: treeMove 4s linear infinite;
+.progress-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(56, 189, 248, 0.1);
+  border-radius: var(--r-full);
+  overflow: hidden;
+  margin-bottom: 10px;
 }
 
-.tree.left {
-  top: 10px;
-  left: -20px;
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-glow) 0%, #818cf8 100%);
+  border-radius: var(--r-full);
+  animation: progressLoad 3s ease-in-out forwards;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
 }
 
-.tree.right {
-  top: 10px;
-  right: -20px;
+@keyframes progressLoad {
+  0%   { width: 0%; }
+  30%  { width: 40%; }
+  60%  { width: 70%; }
+  85%  { width: 88%; }
+  100% { width: 100%; }
 }
 
-@keyframes treeMove {
-  0% {
-    transform: translateX(0px);
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateX(-10px);
-    opacity: 0.4;
-  }
+.progress-text {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
-/* Enhanced road surface */
-.road::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      rgba(255, 255, 255, 0.02) 1px,
-      transparent 2px,
-      transparent 10px
-    );
-  animation: roadTexture 2s linear infinite;
-}
-
-@keyframes roadTexture {
-  0% { transform: translateX(0px); }
-  100% { transform: translateX(-10px); }
-}
-
+/* Loading text */
 .loading-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-gold) 0%, #FFD700 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 16px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
 }
 
 .loading-subtitle {
   color: var(--text-secondary);
-  font-size: 1.1rem;
-  margin-bottom: 32px;
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
-.loading-bar {
-  width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
+/* Snow dots */
+.loading-snow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
   overflow: hidden;
 }
 
-.loading-progress {
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary-gold) 0%, #FFD700 100%);
-  border-radius: 2px;
-  animation: shimmer 1.5s ease-in-out infinite;
+.snow-dot {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(200, 230, 255, 0.5);
+  border-radius: 50%;
+  animation: snowFall linear infinite;
 }
 
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
+@keyframes snowFall {
+  0%   { transform: translateY(-10px) translateX(0); opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(100vh) translateX(20px); opacity: 0; }
 }
