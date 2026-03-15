@@ -59,6 +59,17 @@ app.use('/api/contests', contestRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/profile', profileRoutes);
 
+// Serve frontend build in production
+if (process.env.NODE_ENV === 'production') {
+    const path = require('path');
+    const frontendDist = path.join(__dirname, '../frontend/dist');
+    app.use(express.static(frontendDist));
+    // SPA fallback — all non-API routes serve index.html
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(frontendDist, 'index.html'));
+    });
+}
+
 // API documentation endpoint
 app.get('/api', (req, res) => {
     res.json({

@@ -2,8 +2,8 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  /* DO NOT set width/height here — canvas pixel size is controlled by JS.
+     CSS sizing would stretch the bitmap and break the animation. */
   pointer-events: none;
   z-index: 0;
 }
