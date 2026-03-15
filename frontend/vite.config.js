@@ -24,11 +24,11 @@ export default defineConfig(({ mode }) => {
       // Chunk splitting for better caching
       rollupOptions: {
         output: {
-          manualChunks: {
-            vendor: ['react', 'react-dom'],
-            motion: ['framer-motion'],
-            stellar: ['stellar-sdk', '@stellar/freighter-api'],
-            map: ['leaflet', 'react-leaflet'],
+          manualChunks: (id) => {
+            if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) return 'vendor';
+            if (id.includes('node_modules/framer-motion')) return 'motion';
+            if (id.includes('node_modules/stellar-sdk') || id.includes('node_modules/@stellar')) return 'stellar';
+            if (id.includes('node_modules/leaflet') || id.includes('node_modules/react-leaflet')) return 'map';
           },
         },
       },
