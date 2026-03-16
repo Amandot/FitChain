@@ -51,11 +51,6 @@ const LandingPage = ({ onEnterApp, onShowContests, onShowLeaderboard, onShowCont
     <div className="landing-page">
       <SnowEffect />
 
-      {/* ── Top Banner ── */}
-      <div className="top-banner">
-        <span className="top-banner-badge">❄️ Powered by Stellar Blockchain</span>
-      </div>
-
       {/* ── Navbar ── */}
       <motion.nav
         className={`navbar ${isScrolled ? 'scrolled' : ''}`}

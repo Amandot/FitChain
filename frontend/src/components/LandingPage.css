@@ -57,7 +57,7 @@ body {
 ══════════════════════════════ */
 .navbar {
   position: fixed;
-  top: 36px; /* offset below top banner */
+  top: 0;
   left: 0;
   right: 0;
   z-index: 9999;
@@ -235,7 +235,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 160px 28px 90px;
+  padding: 120px 28px 90px;
   position: relative;
   overflow: hidden;
 }
@@ -315,7 +315,7 @@ body {
 
 .hero-title {
   font-family: 'Syne', sans-serif;
-  font-size: clamp(2.4rem, 6vw, 4.8rem);
+  font-size: clamp(1.9rem, 4.5vw, 3.6rem);
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -2px;
@@ -755,7 +755,7 @@ body {
   .nav-links { display: none; }
   .nav-cta-button { display: none; }
   .mobile-menu-button { display: flex; }
-  .navbar { top: 36px; }
+  .navbar { top: 0; }
 
   .features-grid { grid-template-columns: repeat(2, 1fr); }
   .stats-inner   { grid-template-columns: repeat(2, 1fr); }

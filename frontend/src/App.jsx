@@ -364,29 +364,17 @@ function App() {
       if (loopDistance > 50) {
         setMessage(`Invalid loop! Start and end are ${loopDistance.toFixed(0)}m apart (must be < 50m)`);
       } else {
-        setMessage(`Valid loop! Time: ${elapsedTime}s, Distance: ${distance.toFixed(0)}m`);
-        // Auto-save run to backend if wallet is connected
-        const addr = metaMaskInfo?.address || walletAddress;
-        if (addr && distance > 0 && elapsedTime > 0) {
-          const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-          fetch(`${API_BASE}/api/profile/${addr}/runs`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              distance_meters: distance,
-              duration_seconds: elapsedTime,
-              avg_speed: distance > 0 && elapsedTime > 0 ? distance / elapsedTime : 0,
-            }),
-          }).catch(() => {});
-        }
+        setMessage(`✅ Run complete! Distance: ${(distance / 1000).toFixed(2)}km, Time: ${elapsedTime}s — click Submit to save.`);
       }
     }
   };
 
-  // Submit to Stellar blockchain
+  // Submit run — saves to DB and optionally to Stellar blockchain
   const submitToStellar = async () => {
-    if (!walletAddress || !stellarWalletInfo) {
-      setMessage('Please connect Stellar wallet first');
+    const addr = metaMaskInfo?.address || walletAddress;
+
+    if (!addr) {
+      setMessage('Please connect your wallet first');
       return;
     }
 
@@ -395,47 +383,33 @@ function App() {
       return;
     }
 
-    const start = path[0];
-    const end = path[path.length - 1];
-    const loopDistance = calculateDistance(start[0], start[1], end[0], end[1]);
-
-    if (loopDistance > 50) {
-      setMessage('Cannot submit invalid loop');
-      return;
-    }
-
     try {
-      // Generate activity ID from starting coordinates and timestamp
-      const activityId = `activity_${start[0].toFixed(4)}_${start[1].toFixed(4)}_${Date.now()}`;
+      setMessage('💾 Saving run...');
 
-      setMessage(`🔄 Submitting to Stellar ${stellarNetwork?.network || 'testnet'} network... Activity ID: ${activityId}`);
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const res = await fetch(`${API_BASE}/api/profile/${addr}/runs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          distance_meters: distance,
+          duration_seconds: elapsedTime,
+          avg_speed: distance > 0 && elapsedTime > 0 ? distance / elapsedTime : 0,
+          date: new Date().toISOString(),
+        }),
+      });
 
-      // Prepare fitness data for Stellar blockchain
-      const fitnessData = {
-        activityId,
-        walletAddress: stellarWalletInfo.publicKey,
-        walletType: stellarWalletInfo.walletType,
-        startCoords: [start[0], start[1]],
-        endCoords: [end[0], end[1]],
-        distance: Math.round(distance),
-        time: elapsedTime,
-        timestamp: Math.floor(Date.now() / 1000),
-        pathLength: path.length,
-        network: stellarNetwork?.network
-      };
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message || 'Failed to save run');
 
-      console.log('🌟 Stellar Fitness Data:', fitnessData);
+      setMessage(`✅ Run saved! Distance: ${(distance / 1000).toFixed(2)}km, Time: ${formatTime(elapsedTime)}`);
 
-      // TODO: Implement Stellar smart contract interaction
-      // This would involve creating a transaction with the fitness data
-      // and submitting it to the Stellar network
-
-      setMessage(`✅ Fitness data prepared for Stellar! Activity: ${activityId}, Time: ${elapsedTime}s, Distance: ${distance.toFixed(0)}m`);
-      console.log('ℹ️ Stellar smart contract integration coming soon');
-
+      // Reset run state after successful save
+      setPath([]);
+      setDistance(0);
+      setElapsedTime(0);
     } catch (error) {
-      console.error('Blockchain submission error:', error);
-      setMessage(`❌ Blockchain Error: ${error.message}`);
+      console.error('Save run error:', error);
+      setMessage(`❌ Error saving run: ${error.message}`);
     }
   };
 
@@ -783,7 +757,7 @@ function App() {
                 onClick={submitToStellar}
                 className="btn btn-submit"
               >
-                Submit to Stellar
+                Submit
               </motion.button>
             )}
           </AnimatePresence>
