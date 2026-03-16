@@ -10,6 +10,9 @@ export default defineConfig(({ mode }) => {
     // Dev proxy — avoids CORS issues during local development
     server: {
       host: true, // bind to 0.0.0.0 — fixes IPv4/IPv6 mismatch (127.0.0.1 vs ::1)
+      hmr: {
+        host: 'localhost',
+      },
       proxy: {
         '/api': {
           target: env.VITE_API_URL || 'http://localhost:3001',

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useWallet } from '../App';
+import { useWallet } from '../WalletContext';
 import './ProfilePage.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';

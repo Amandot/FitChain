@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { distributeContestPrizes, formatXLMAmount } from '../utils/stellarPayments';
-import { useWallet } from '../App';
+import { useWallet } from '../WalletContext';
 
 const PrizeDistributionDemo = () => {
     const [isDistributing, setIsDistributing] = useState(false);

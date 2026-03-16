@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { distributeContestPrizes, formatXLMAmount, CONTEST_PRIZES } from '../utils/stellarPayments';
-import { useWallet } from '../App';
+import { useWallet } from '../WalletContext';
 import './ContestLeaderboard.css';
 
 const ContestLeaderboard = () => {

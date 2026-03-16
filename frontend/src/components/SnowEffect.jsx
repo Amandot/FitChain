@@ -27,7 +27,7 @@ const SnowEffect = () => {
       const count = window.innerWidth < 768 ? PARTICLE_COUNT_MOBILE : PARTICLE_COUNT_DESKTOP;
       particlesRef.current = Array.from({ length: count }, () => {
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 0.6 + 0.8; // 0.8 – 1.4 px/frame, always visible
+        const speed = Math.random() * 0.2 + 0.2; // 0.8 – 1.4 px/frame, always visible
         return {
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useWallet } from '../App';
+import { useWallet } from '../WalletContext';
 import './GlobalNavigation.css';
 
 const GlobalNavigation = ({

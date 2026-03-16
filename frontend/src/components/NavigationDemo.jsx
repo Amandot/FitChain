@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useWallet } from '../App';
+import { useWallet } from '../WalletContext';
 import './NavigationDemo.css';
 
 const NavigationDemo = () => {

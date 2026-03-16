@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, createContext, useContext } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LandingPage from './components/LandingPage';
 import LoadingScreen from './components/LoadingScreen';
@@ -16,13 +16,11 @@ import NavigationDemo from './components/NavigationDemo';
 import FreighterStatus from './components/FreighterStatus';
 import MetaMaskConnect from './components/MetaMaskConnect';
 import ProfilePage from './components/ProfilePage';
+import { WalletContext, useWallet } from './WalletContext';
 import stellarWallet from './utils/stellarWallet';
 import { isInMumbai, MUMBAI_CENTER } from './utils/mumbaiGeofence';
-import './App.css';
 
-// Global Wallet Context for persistent connection across pages
-const WalletContext = createContext();
-export const useWallet = () => useContext(WalletContext);
+import './App.css';
 
 // Stellar Network Configuration
 const STELLAR_NETWORK = import.meta.env.VITE_STELLAR_NETWORK || 'testnet';

@@ -28,33 +28,7 @@ const LandingPage = ({ onEnterApp, onShowContests, onShowLeaderboard, onShowCont
   const [currentFeature, setCurrentFeature] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [typedText, setTypedText] = useState('');
-  const [wordIndex, setWordIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  const cycleWords = ['Fitness Journey', 'Running Goals', 'Health Records', 'NFT Rewards'];
-
-  useEffect(() => {
-    const current = cycleWords[wordIndex];
-    const speed = isDeleting ? 40 : 80;
-
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        setTypedText(current.slice(0, typedText.length + 1));
-        if (typedText.length + 1 === current.length) {
-          setTimeout(() => setIsDeleting(true), 1600);
-        }
-      } else {
-        setTypedText(current.slice(0, typedText.length - 1));
-        if (typedText.length - 1 === 0) {
-          setIsDeleting(false);
-          setWordIndex(i => (i + 1) % cycleWords.length);
-        }
-      }
-    }, speed);
-
-    return () => clearTimeout(timeout);
-  }, [typedText, isDeleting, wordIndex]);
 
   useEffect(() => {
     const interval = setInterval(() => setCurrentFeature(p => (p + 1) % features.length), 4000);
@@ -143,7 +117,7 @@ const LandingPage = ({ onEnterApp, onShowContests, onShowLeaderboard, onShowCont
         >
           <h1 className="hero-title">
             Transform Your<br />
-            <span className="highlight">{typedText}<span className="cursor">|</span></span><br />
+            <span className="highlight">Fitness Journey</span><br />
             with Blockchain
           </h1>
 
