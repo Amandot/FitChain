@@ -19,6 +19,12 @@ import ProfilePage from './components/ProfilePage';
 import { WalletContext, useWallet } from './WalletContext';
 import stellarWallet from './utils/stellarWallet';
 import { isInMumbai, MUMBAI_CENTER } from './utils/mumbaiGeofence';
+import {
+  createValidationState,
+  validateSpeedReading,
+  validateSession,
+  MAX_WALKING_SPEED_KMH,
+} from './utils/activityValidator';
 
 import './App.css';
 
@@ -75,6 +81,11 @@ function App() {
   const watchIdRef = useRef(null);
   const lastValidPositionRef = useRef(null);
   const lastUpdateTimeRef = useRef(null);
+  const validationStateRef = useRef(null);
+
+  // Activity validation state for UI feedback
+  const [activityWarning, setActivityWarning] = useState('');
+  const [sessionInvalidated, setSessionInvalidated] = useState(false);
 
   // Calculate distance between two coordinates (Haversine formula)
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -218,10 +229,13 @@ function App() {
     setAccuracy(0);
     setLastUpdateTime(null);
     setMessage('🛰️ GPS tracking started... Getting your location...');
+    setActivityWarning('');
+    setSessionInvalidated(false);
 
     // Reset refs for fresh tracking session
     lastValidPositionRef.current = null;
     lastUpdateTimeRef.current = null;
+    validationStateRef.current = createValidationState();
 
     // Enhanced GPS options for real-time tracking (like Google Maps)
     const options = {
@@ -316,6 +330,35 @@ function App() {
         lastUpdateTimeRef.current = currentTime;
         setLastUpdateTime(currentTime);
 
+        // ── Activity validation ──────────────────────────────────────────────
+        const validation = validateSpeedReading(
+          validationStateRef.current,
+          displaySpeed,
+          accuracy,
+        );
+
+        if (!validation.isValid) {
+          // Reject this distance segment — don't add it
+          setActivityWarning(
+            `⚠️ ${validation.reason} (${validation.activityType !== 'walking' ? validation.activityType : 'invalid reading'})`,
+          );
+        } else {
+          setActivityWarning('');
+        }
+
+        if (validation.sessionFlagged) {
+          setSessionInvalidated(true);
+          // Stop tracking immediately — session is non-walking
+          if (watchIdRef.current) {
+            navigator.geolocation.clearWatch(watchIdRef.current);
+          }
+          setIsTracking(false);
+          setMessage(
+            `🚫 Activity invalidated: ${validationStateRef.current.flagReason}. Only walking activities are accepted.`,
+          );
+          return;
+        }
+
         const accuracyText = accuracy < 10 ? '🟢 Excellent' : accuracy < 20 ? '🟡 Good' : accuracy < 50 ? '🟠 Fair' : '🔴 Poor';
         const movementStatus = movementDetected ? '🏃‍♂️ Moving' : '⏸️ Stationary';
         const speedKmh = (displaySpeed * 3.6).toFixed(1);
@@ -354,6 +397,16 @@ function App() {
       navigator.geolocation.clearWatch(watchIdRef.current);
     }
     setIsTracking(false);
+
+    // Session-level activity validation
+    const sessionCheck = validateSession(validationStateRef.current);
+    if (!sessionCheck.valid) {
+      setSessionInvalidated(true);
+      setMessage(`🚫 Run rejected: ${sessionCheck.reason}. Only walking activities count.`);
+      setPath([]);
+      setDistance(0);
+      return;
+    }
 
     // Validate loop
     if (path.length > 2) {
@@ -708,7 +761,35 @@ function App() {
               <span className="value">{stat.value}</span>
             </motion.div>
           ))}
+
+          {/* Activity validation badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 1.4 }}
+            className={`stat glass ${sessionInvalidated ? 'stat-invalid' : activityWarning ? 'stat-warning' : 'stat-valid'}`}
+          >
+            <span className="label">🛡️ Activity</span>
+            <span className="value">
+              {sessionInvalidated ? '🚫 Invalid' : activityWarning ? '⚠️ Warning' : '✅ Walking'}
+            </span>
+          </motion.div>
         </motion.div>
+
+        {/* Activity validation warning banner */}
+        <AnimatePresence>
+          {activityWarning && isTracking && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="activity-warning glass"
+            >
+              {activityWarning}
+              <span className="activity-warning-limit"> — limit: {MAX_WALKING_SPEED_KMH} km/h</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
