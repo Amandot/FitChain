@@ -8,6 +8,8 @@ A revolutionary blockchain-powered fitness tracking application that combines re
 [![Stellar](https://img.shields.io/badge/Blockchain-Stellar-blue.svg)](https://stellar.org)
 [![React](https://img.shields.io/badge/React-19.1.1-61DAFB.svg)](https://reactjs.org)
 
+🌐 **Live Demo:** https://fit-chain-nine.vercel.app/
+
 ---
 
 ## 🌟 Features
